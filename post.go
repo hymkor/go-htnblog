@@ -19,10 +19,6 @@ func (B *Blog) Post(title, content string) error {
 	return B.post(http.MethodPost, B.EndPointUrl+"/entry", title, content)
 }
 
-func (B *Blog) Update(entryId, title, content string) error {
-	return B.post(http.MethodPut, B.EndPointUrl+"/entry/"+entryId, title, content)
-}
-
 func (B *Blog) request(method, endPointUrl string, r io.Reader) (io.ReadCloser, error) {
 	req, err := http.NewRequest(method, endPointUrl, r)
 	if err != nil {
@@ -52,6 +48,20 @@ func (B *Blog) post(method, endPointUrl, title, content string) error {
 		return fmt.Errorf("Marshal: %w", err)
 	}
 	r, err := B.request(method, endPointUrl, strings.NewReader(output))
+	if err != nil {
+		return err
+	}
+	io.Copy(os.Stdout, r)
+	r.Close()
+	return nil
+}
+
+func (B *Blog) Update(entry *xmlEntry) error {
+	output, err := entry.Marshal()
+	if err != nil {
+		return fmt.Errorf("Marshal: %w", err)
+	}
+	r, err := B.request(http.MethodPut, entry.EditUrl(), strings.NewReader(output))
 	if err != nil {
 		return err
 	}

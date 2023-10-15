@@ -30,7 +30,9 @@ type xmlLink struct {
 }
 
 func (entry *xmlEntry) Marshal() (string, error) {
-	entry.IsDraft = "yes"
+	if entry.IsDraft == "" {
+		entry.IsDraft = "yes"
+	}
 	entry.XMLNs = "http://www.w3.org/2005/Atom"
 	entry.XMLNsApp = "http://www.w3.org/2007/app"
 
