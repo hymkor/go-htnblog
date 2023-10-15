@@ -117,7 +117,7 @@ import (
     "github.com/hymkor/go-htnblog"
 )
 
-func mains() error {
+func edit() error {
     auth, err := io.ReadAll(os.Stdin)
     if err != nil {
         return err
@@ -139,7 +139,7 @@ func mains() error {
 }
 
 func main() {
-    if err := mains(); err != nil {
+    if err := edit(); err != nil {
         fmt.Fprintln(os.Stderr, err.Error())
         os.Exit(1)
     }
