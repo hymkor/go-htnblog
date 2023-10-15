@@ -1,6 +1,7 @@
 package htnblog
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -9,10 +10,16 @@ import (
 )
 
 type Blog struct {
-	UserId      string
-	EndPointUrl string
-	ApiKey      string
-	Author      string
+	UserId      string `json:"userid"`
+	EndPointUrl string `json:"endpointurl"`
+	ApiKey      string `json:"apikey"`
+	Author      string `json:"author"`
+}
+
+func NewFromJSON(json1 []byte) (*Blog, error) {
+	blog := &Blog{}
+	err := json.Unmarshal(json1, blog)
+	return blog, err
 }
 
 func (B *Blog) request(method, endPointUrl string, r io.Reader) (io.ReadCloser, error) {
