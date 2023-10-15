@@ -12,12 +12,21 @@ type xmlEntry struct {
 	Author   string     `xml:"author>name"`
 	Content  xmlContent `xml:content"`
 	IsDraft  string     `xml:"app:control>app:draft"`
+	Link     []xmlLink  `xml:"link"`
 }
 
 type xmlContent struct {
 	XMLName xml.Name `xml:"content"`
 	Body    string   `xml:",cdata"`
 	Type    string   `xml:"type,attr"`
+}
+
+// <link rel="edit" href="https://blog.hatena.ne.jp/{はてなID}/ブログID}/atom/entry/2500000000"/>
+
+type xmlLink struct {
+	XMLName xml.Name `xml:"link"`
+	Rel     string   `xml:"rel,attr"`
+	Href    string   `xml:"href,attr"`
 }
 
 func (entry *xmlEntry) Marshal() (string, error) {
@@ -30,4 +39,13 @@ func (entry *xmlEntry) Marshal() (string, error) {
 		return "", err
 	}
 	return xml.Header + string(result), nil
+}
+
+func (entry *xmlEntry) EditUrl() string {
+	for _, link := range entry.Link {
+		if link.Rel == "edit" {
+			return link.Href
+		}
+	}
+	return ""
 }
