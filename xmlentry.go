@@ -5,14 +5,13 @@ import (
 )
 
 type xmlEntry struct {
-	XMLName  xml.Name    `xml:"entry"`
-	XMLNs    string      `xml:"xmlns,attr"`
-	XMLNsApp string      `xml:"xmlns:app,attr"`
-	Title    string      `xml:"title"`
-	Author   string      `xml:"author>name"`
-	Content1 *xmlContent `xml:content"`
-	Content  string      `xml:-`
-	IsDraft  string      `xml:"app:control>app:draft"`
+	XMLName  xml.Name   `xml:"entry"`
+	XMLNs    string     `xml:"xmlns,attr"`
+	XMLNsApp string     `xml:"xmlns:app,attr"`
+	Title    string     `xml:"title"`
+	Author   string     `xml:"author>name"`
+	Content  xmlContent `xml:content"`
+	IsDraft  string     `xml:"app:control>app:draft"`
 }
 
 type xmlContent struct {
@@ -22,10 +21,6 @@ type xmlContent struct {
 }
 
 func (entry *xmlEntry) Marshal() (string, error) {
-	entry.Content1 = &xmlContent{
-		Type: "text/plain",
-		Body: entry.Content,
-	}
 	entry.IsDraft = "yes"
 	entry.XMLNs = "http://www.w3.org/2005/Atom"
 	entry.XMLNsApp = "http://www.w3.org/2007/app"

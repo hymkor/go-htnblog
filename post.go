@@ -40,9 +40,12 @@ func (B *Blog) request(method, endPointUrl string, r io.Reader) (io.ReadCloser, 
 
 func (B *Blog) post(method, endPointUrl, title, content string) error {
 	entry := &xmlEntry{
-		Title:   title,
-		Author:  B.Author,
-		Content: content,
+		Title:  title,
+		Author: B.Author,
+		Content: xmlContent{
+			Type: "text/plain",
+			Body: content,
+		},
 	}
 	output, err := entry.Marshal()
 	if err != nil {
