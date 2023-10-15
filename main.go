@@ -32,17 +32,8 @@ func (B *Blog) Post(title, content string) error {
 	if err != nil {
 		return fmt.Errorf("http.NewRequest: %w", err)
 	}
-	/*
-		//wsse, err := newWsse(req, userId, endPointUrl, apiKey)
-		if err != nil {
-			return fmt.Errorf("newWsse: %w", err)
-		}
-	*/
 	req.SetBasicAuth(B.UserId, B.ApiKey)
 	req.Header.Add("Content-Type", "application/x.atom+xml, application/xml, text/xml, */*")
-	//req.Header.Add("X-WSSE", wsse)
-	//println("X-WSSE:", wsse)
-
 	var client http.Client
 	res, err := client.Do(req)
 	if err != nil {
