@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -51,4 +52,12 @@ func (B *Blog) Update(entry *XmlEntry) (io.ReadCloser, error) {
 		return nil, fmt.Errorf("Marshal: %w", err)
 	}
 	return B.request(http.MethodPut, entry.EditUrl(), strings.NewReader(output))
+}
+
+func Dump(r io.ReadCloser, err error) error {
+	if err != nil {
+		return err
+	}
+	io.Copy(os.Stdout, r)
+	return r.Close()
 }
