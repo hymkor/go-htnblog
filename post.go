@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"strings"
 )
 
@@ -30,7 +29,7 @@ func (B *Blog) request(method, endPointUrl string, r io.Reader) (io.ReadCloser, 
 	return res.Body, nil
 }
 
-func (B *Blog) Post(title, content string) error {
+func (B *Blog) Post(title, content string) (io.ReadCloser, error) {
 	entry := &XmlEntry{
 		Title:  title,
 		Author: B.Author,
@@ -41,27 +40,15 @@ func (B *Blog) Post(title, content string) error {
 	}
 	output, err := entry.Marshal()
 	if err != nil {
-		return fmt.Errorf("Marshal: %w", err)
+		return nil, fmt.Errorf("Marshal: %w", err)
 	}
-	r, err := B.request(http.MethodPost, B.EndPointUrl+"/entry", strings.NewReader(output))
-	if err != nil {
-		return err
-	}
-	io.Copy(os.Stdout, r)
-	r.Close()
-	return nil
+	return B.request(http.MethodPost, B.EndPointUrl+"/entry", strings.NewReader(output))
 }
 
-func (B *Blog) Update(entry *XmlEntry) error {
+func (B *Blog) Update(entry *XmlEntry) (io.ReadCloser, error) {
 	output, err := entry.Marshal()
 	if err != nil {
-		return fmt.Errorf("Marshal: %w", err)
+		return nil, fmt.Errorf("Marshal: %w", err)
 	}
-	r, err := B.request(http.MethodPut, entry.EditUrl(), strings.NewReader(output))
-	if err != nil {
-		return err
-	}
-	io.Copy(os.Stdout, r)
-	r.Close()
-	return nil
+	return B.request(http.MethodPut, entry.EditUrl(), strings.NewReader(output))
 }
