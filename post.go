@@ -16,10 +16,10 @@ type Blog struct {
 }
 
 func (B *Blog) Post(title, content string) error {
-	return B.post(B.EndPointUrl+"/entry", title, content)
+	return B.post(http.MethodPost, B.EndPointUrl+"/entry", title, content)
 }
 
-func (B *Blog) post(endPointUrl, title, content string) error {
+func (B *Blog) post(method, endPointUrl, title, content string) error {
 	entry := &xmlEntry{
 		Title:   title,
 		Author:  B.Author,
@@ -30,7 +30,7 @@ func (B *Blog) post(endPointUrl, title, content string) error {
 		return fmt.Errorf("Marshal: %w", err)
 	}
 
-	req, err := http.NewRequest(http.MethodPost, endPointUrl, strings.NewReader(output))
+	req, err := http.NewRequest(method, endPointUrl, strings.NewReader(output))
 	if err != nil {
 		return fmt.Errorf("http.NewRequest: %w", err)
 	}
