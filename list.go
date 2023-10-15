@@ -11,10 +11,10 @@ type xmlFeed struct {
 	XMLName  xml.Name    `xml:"feed"`
 	XMLNs    string      `xml:"xmlns,attr"`
 	XMLNsApp string      `xml:"xmlns:app,attr"`
-	Entry    []*xmlEntry `xml:"entry"`
+	Entry    []*XmlEntry `xml:"entry"`
 }
 
-func (B *Blog) List() ([]*xmlEntry, error) {
+func (B *Blog) List() ([]*XmlEntry, error) {
 	body, err := B.request(http.MethodGet, B.EndPointUrl+"/entry", nil)
 	if err != nil {
 		return nil, err

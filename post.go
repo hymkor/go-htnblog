@@ -35,10 +35,10 @@ func (B *Blog) request(method, endPointUrl string, r io.Reader) (io.ReadCloser, 
 }
 
 func (B *Blog) post(method, endPointUrl, title, content string) error {
-	entry := &xmlEntry{
+	entry := &XmlEntry{
 		Title:  title,
 		Author: B.Author,
-		Content: xmlContent{
+		Content: XmlContent{
 			Type: "text/plain",
 			Body: content,
 		},
@@ -56,7 +56,7 @@ func (B *Blog) post(method, endPointUrl, title, content string) error {
 	return nil
 }
 
-func (B *Blog) Update(entry *xmlEntry) error {
+func (B *Blog) Update(entry *XmlEntry) error {
 	output, err := entry.Marshal()
 	if err != nil {
 		return fmt.Errorf("Marshal: %w", err)

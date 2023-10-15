@@ -4,18 +4,18 @@ import (
 	"encoding/xml"
 )
 
-type xmlEntry struct {
+type XmlEntry struct {
 	XMLName  xml.Name   `xml:"entry"`
 	XMLNs    string     `xml:"xmlns,attr"`
 	XMLNsApp string     `xml:"xmlns:app,attr"`
 	Title    string     `xml:"title"`
 	Author   string     `xml:"author>name"`
-	Content  xmlContent `xml:content"`
+	Content  XmlContent `xml:content"`
 	IsDraft  string     `xml:"app:control>app:draft"`
-	Link     []xmlLink  `xml:"link"`
+	Link     []XmlLink  `xml:"link"`
 }
 
-type xmlContent struct {
+type XmlContent struct {
 	XMLName xml.Name `xml:"content"`
 	Body    string   `xml:",cdata"`
 	Type    string   `xml:"type,attr"`
@@ -23,13 +23,13 @@ type xmlContent struct {
 
 // <link rel="edit" href="https://blog.hatena.ne.jp/{はてなID}/ブログID}/atom/entry/2500000000"/>
 
-type xmlLink struct {
+type XmlLink struct {
 	XMLName xml.Name `xml:"link"`
 	Rel     string   `xml:"rel,attr"`
 	Href    string   `xml:"href,attr"`
 }
 
-func (entry *xmlEntry) Marshal() (string, error) {
+func (entry *XmlEntry) Marshal() (string, error) {
 	if entry.IsDraft == "" {
 		entry.IsDraft = "yes"
 	}
@@ -43,7 +43,7 @@ func (entry *xmlEntry) Marshal() (string, error) {
 	return xml.Header + string(result), nil
 }
 
-func (entry *xmlEntry) EditUrl() string {
+func (entry *XmlEntry) EditUrl() string {
 	for _, link := range entry.Link {
 		if link.Rel == "edit" {
 			return link.Href
