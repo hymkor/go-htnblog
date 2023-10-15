@@ -19,6 +19,25 @@ func (B *Blog) Post(title, content string) error {
 	return B.post(http.MethodPost, B.EndPointUrl+"/entry", title, content)
 }
 
+func (B *Blog) Update(entryId, title, content string) error {
+	return B.post(http.MethodPut, B.EndPointUrl+"/entry/"+entryId, title, content)
+}
+
+func (B *Blog) request(method, endPointUrl string, r io.Reader) (io.ReadCloser, error) {
+	req, err := http.NewRequest(method, endPointUrl, r)
+	if err != nil {
+		return nil, fmt.Errorf("http.NewRequest: %w", err)
+	}
+	req.SetBasicAuth(B.UserId, B.ApiKey)
+	req.Header.Add("Content-Type", "application/x.atom+xml, application/xml, text/xml, */*")
+	var client http.Client
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("(http.Client) Do: %w", err)
+	}
+	return res.Body, nil
+}
+
 func (B *Blog) post(method, endPointUrl, title, content string) error {
 	entry := &xmlEntry{
 		Title:   title,
@@ -29,19 +48,11 @@ func (B *Blog) post(method, endPointUrl, title, content string) error {
 	if err != nil {
 		return fmt.Errorf("Marshal: %w", err)
 	}
-
-	req, err := http.NewRequest(method, endPointUrl, strings.NewReader(output))
+	r, err := B.request(method, endPointUrl, strings.NewReader(output))
 	if err != nil {
-		return fmt.Errorf("http.NewRequest: %w", err)
+		return err
 	}
-	req.SetBasicAuth(B.UserId, B.ApiKey)
-	req.Header.Add("Content-Type", "application/x.atom+xml, application/xml, text/xml, */*")
-	var client http.Client
-	res, err := client.Do(req)
-	if err != nil {
-		return fmt.Errorf("(http.Client) Do: %w", err)
-	}
-	defer res.Body.Close()
-	io.Copy(os.Stdout, res.Body)
+	io.Copy(os.Stdout, r)
+	r.Close()
 	return nil
 }
