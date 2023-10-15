@@ -3,6 +3,21 @@ go-htnblog：はてなブログ投稿用Go言語パッケージ
 
 まだ BASIC 認証でごめん
 
+サンプルツール
+-----------------------
+
+[cmd/htnblog/main.go](cmd/htnblog/main.go)
+
+```cmd/htnblog/htnblog |
+Usage: htnblog {list|new|edit}
+  htnblog list ... show recent articles
+  htnblog new  ... create new draft
+  htnblog edit ... edit the latest article
+
+Please set your editor to $EDITOR
+ or { "editor": "YOUR-EDITOR" } on ~/.htnblog
+```
+
 例: 一覧表示
 ------------
 
@@ -141,6 +156,7 @@ func main() {
     "userid":"(YOUR_USER_ID)",
     "endpointurl":"(END_POINT_URL)",
     "apikey":"(YOUR API KEY)",
-    "author":"(YOUR NAME)"
+    "author":"(YOUR NAME)",
+    "editor":"(YOUR EDITOR.THIS IS for cmd/htnblog/main.go)"
 }
 ```
