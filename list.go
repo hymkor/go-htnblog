@@ -31,3 +31,14 @@ func (B *Blog) List() ([]*XmlEntry, error) {
 	}
 	return feed.Entry, nil
 }
+
+func (B *Blog) Dump(w io.Writer) error {
+	body, err := B.request(http.MethodGet, B.EndPointUrl+"/entry", nil)
+	if err != nil {
+		return err
+	}
+	defer body.Close()
+
+	_, err = io.Copy(w, body)
+	return err
+}
