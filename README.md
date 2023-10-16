@@ -13,7 +13,7 @@ Usage: htnblog {list|new|edit}
   htnblog list ... show recent articles
   htnblog new  ... create new draft
   htnblog edit ... edit the latest article
-    The lines in the draft up to the first blank line are the header lines,
+    The lines in the draft up to "---" are the header lines,
     and the rest is the article body.
 
 Please write your setting on ~/.htnblog as below:
