@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -80,12 +82,71 @@ func callEditor(draft []byte) ([]byte, error) {
 }
 
 func newEntry(blog *htnblog.Blog) error {
-	draft, err := callEditor([]byte{})
+	draft, err := callEditor([]byte("Title: \n\n\n"))
 	if err != nil {
 		return err
 	}
-	title, body, _ := bytes.Cut(draft, []byte{'\n'})
-	return htnblog.Dump(blog.Post(strings.TrimSpace(string(title)), strings.TrimSpace(string(body))))
+
+	header, body, err := splitHeaderAndBody(bytes.NewReader(draft))
+	if err != nil {
+		return err
+	}
+	title := strings.Join(header["title"], " ")
+	return htnblog.Dump(blog.Post(title, strings.TrimSpace(string(body))))
+}
+
+func ignoreEof(err error) error {
+	if err == io.EOF {
+		return nil
+	}
+	return err
+}
+
+func chomp(text string) string {
+	if len(text) > 0 && text[len(text)-1] == '\n' {
+		text = text[:len(text)-1]
+	}
+	if len(text) > 0 && text[len(text)-1] == '\r' {
+		text = text[:len(text)-1]
+	}
+	return text
+}
+
+func splitHeaderAndBody(r io.Reader) (map[string][]string, []byte, error) {
+	br := bufio.NewReader(r)
+	header := map[string][]string{}
+	for {
+		text, err := br.ReadString('\n')
+		if err != nil {
+			return header, []byte{}, ignoreEof(err)
+		}
+		text = chomp(text)
+		if text == "" {
+			break
+		}
+		name, value, _ := strings.Cut(text, ": ")
+		name = strings.ToLower(name)
+		header[name] = append(header[name], value)
+	}
+	body, err := io.ReadAll(br)
+	return header, body, ignoreEof(err)
+}
+
+func entryToDraft(entry *htnblog.XmlEntry) []byte {
+	var buffer bytes.Buffer
+	fmt.Fprintf(&buffer, "Title: %s\n", entry.Title)
+	fmt.Fprintf(&buffer, "\n%s", entry.Content.Body)
+	return buffer.Bytes()
+}
+
+func draftToEntry(draft []byte, entry *htnblog.XmlEntry) error {
+	header, body, err := splitHeaderAndBody(bytes.NewReader(draft))
+	if err != nil {
+		return err
+	}
+	entry.Title = strings.Join(header["title"], " ")
+	entry.Content.Body = string(body)
+	return nil
 }
 
 func editEntry(blog *htnblog.Blog) error {
@@ -96,18 +157,14 @@ func editEntry(blog *htnblog.Blog) error {
 	if len(entries) <= 0 {
 		return errors.New("no entries")
 	}
-	var buffer bytes.Buffer
-	buffer.WriteString(entries[0].Title)
-	buffer.WriteByte('\n')
-	buffer.WriteString(entries[0].Content.Body)
 
-	draft, err := callEditor(buffer.Bytes())
+	draft, err := callEditor(entryToDraft(entries[0]))
 	if err != nil {
 		return err
 	}
-	title, body, _ := bytes.Cut(draft, []byte{'\n'})
-	entries[0].Title = strings.TrimSpace(string(title))
-	entries[0].Content.Body = strings.TrimSpace(string(body))
+	if err := draftToEntry(draft, entries[0]); err != nil {
+		return err
+	}
 	return htnblog.Dump(blog.Update(entries[0]))
 }
 
@@ -121,13 +178,23 @@ func mains(args []string) error {
 		return err
 	}
 	if len(args) < 1 {
-		fmt.Fprintln(os.Stderr, `Usage: htnblog {list|new|edit}`)
-		fmt.Fprintln(os.Stderr, `  htnblog list ... show recent articles`)
-		fmt.Fprintln(os.Stderr, `  htnblog new  ... create new draft`)
-		fmt.Fprintln(os.Stderr, `  htnblog edit ... edit the latest article`)
-		fmt.Fprintln(os.Stderr)
-		fmt.Fprintln(os.Stderr, `Please set your editor to $EDITOR`)
-		fmt.Fprintln(os.Stderr, ` or { "editor": "YOUR-EDITOR" } on ~/.htnblog`)
+		io.WriteString(os.Stderr,
+			`Usage: htnblog {list|new|edit}
+  htnblog list ... show recent articles
+  htnblog new  ... create new draft
+  htnblog edit ... edit the latest article
+    The lines in the draft up to the first blank line are the header lines,
+    and the rest is the article body.
+
+Please write your setting on ~/.htnblog as below:
+    {
+        "userid":"(YOUR_USER_ID)",
+        "endpointurl":"(END_POINT_URL)",
+        "apikey":"(YOUR API KEY)",
+        "author":"(YOUR NAME)",
+        "editor":"(YOUR EDITOR.THIS IS for cmd/htnblog/main.go)"
+    }
+`)
 		return nil
 	}
 	switch args[0] {
