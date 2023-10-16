@@ -1,10 +1,32 @@
 go-htnblog：はてなブログ投稿用Go言語パッケージ
 ==============================================
 
+[![GoDev](https://pkg.go.dev/badge/github.com/hymkor/go-htnblog)](https://pkg.go.dev/github.com/hymkor/go-htnblog)
+
 まだ BASIC 認証でごめん
 
 サンプル投稿ツール (htnblog)
 ----------------------------
+
+### インストール
+
+[Releases](https://github.com/hymkor/go-htnblog/releases)
+よりダウンロードして、実行ファイルを展開してください
+
+### scoop インストーラーがある場合
+
+```
+scoop install https://raw.githubusercontent.com/hymkor/go-htnblog/master/htnblog.json
+```
+
+もしくは
+
+```
+scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
+scoop install htnblog
+```
+
+### 使い方
 
 [cmd/htnblog/main.go](cmd/htnblog/main.go)
 
