@@ -8,7 +8,7 @@ go-htnblog：はてなブログ投稿用Go言語パッケージ
 
 [cmd/htnblog/main.go](cmd/htnblog/main.go)
 
-```cmd/htnblog/htnblog |
+```./htnblog |
 Usage: htnblog {list|new|edit}
   htnblog list ... show recent articles
   htnblog new  ... create new draft
