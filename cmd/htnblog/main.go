@@ -82,7 +82,7 @@ func callEditor(draft []byte) ([]byte, error) {
 }
 
 func newEntry(blog *htnblog.Blog) error {
-	draft, err := callEditor([]byte("Title: \n\n\n"))
+	draft, err := callEditor([]byte("Title: \n---\n\n"))
 	if err != nil {
 		return err
 	}
@@ -121,7 +121,7 @@ func splitHeaderAndBody(r io.Reader) (map[string][]string, []byte, error) {
 			return header, []byte{}, ignoreEof(err)
 		}
 		text = chomp(text)
-		if text == "" {
+		if strings.HasPrefix(text, "---") {
 			break
 		}
 		name, value, _ := strings.Cut(text, ": ")
@@ -135,7 +135,7 @@ func splitHeaderAndBody(r io.Reader) (map[string][]string, []byte, error) {
 func entryToDraft(entry *htnblog.XmlEntry) []byte {
 	var buffer bytes.Buffer
 	fmt.Fprintf(&buffer, "Title: %s\n", entry.Title)
-	fmt.Fprintf(&buffer, "\n%s", entry.Content.Body)
+	fmt.Fprintf(&buffer, "---\n%s", entry.Content.Body)
 	return buffer.Bytes()
 }
 
@@ -183,7 +183,7 @@ func mains(args []string) error {
   htnblog list ... show recent articles
   htnblog new  ... create new draft
   htnblog edit ... edit the latest article
-    The lines in the draft up to the first blank line are the header lines,
+    The lines in the draft up to "---" are the header lines,
     and the rest is the article body.
 
 Please write your setting on ~/.htnblog as below:
