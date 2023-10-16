@@ -13,9 +13,17 @@ Usage: htnblog {list|new|edit}
   htnblog list ... show recent articles
   htnblog new  ... create new draft
   htnblog edit ... edit the latest article
+    The lines in the draft up to the first blank line are the header lines,
+    and the rest is the article body.
 
-Please set your editor to $EDITOR
- or { "editor": "YOUR-EDITOR" } on ~/.htnblog
+Please write your setting on ~/.htnblog as below:
+    {
+        "userid":"(YOUR_USER_ID)",
+        "endpointurl":"(END_POINT_URL)",
+        "apikey":"(YOUR API KEY)",
+        "author":"(YOUR NAME)",
+        "editor":"(YOUR EDITOR.THIS IS for cmd/htnblog/main.go)"
+    }
 ```
 
 例: 一覧表示
