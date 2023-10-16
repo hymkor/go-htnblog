@@ -13,7 +13,7 @@ go-htnblog：はてなブログ投稿用Go言語パッケージ
 [Releases](https://github.com/hymkor/go-htnblog/releases)
 よりダウンロードして、実行ファイルを展開してください
 
-### scoop インストーラーがある場合
+#### scoop インストーラーがある場合
 
 ```
 scoop install https://raw.githubusercontent.com/hymkor/go-htnblog/master/htnblog.json
@@ -26,13 +26,31 @@ scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
 scoop install htnblog
 ```
 
+### 設定ファイル用意
+
+~/.htnblog というファイルに次のように記載してください
+
+```
+{
+    "userid":"(YOUR_HATENA_ID)",
+    "endpointurl":"(END_POINT_URL)",
+    "apikey":"(YOUR API KEY)",
+    "author":"(YOUR NAME)",
+    "editor":"(YOUR EDITOR FULLPATH))"
+}
+```
+
+- **endpointurl** は 「はてな」の「ダッシュボード」 → (ブログ名) → 「設定」 → 詳細設定 → 「AtomPub」セクションのルートネンドポイントの記載の URL になります。
+- **apikey** は「アカウント設定」→「APIキー」に記載されています。
+- **editor** は編集に使うテキストエディターのパスを記載してください。
+
 ### 使い方
 
 [cmd/htnblog/main.go](cmd/htnblog/main.go)
 
 - `htnblog` (オプションなし) … ヘルプ
 - `htnblog list` … 直近10件の記事のリスト
-- `htnblog new` … 新規記事のドラフト作成
+- `htnblog new` … 新規記事のドラフトを作成
 - `htnblog edit` … 直近記事の編集
 
 ```./htnblog |
