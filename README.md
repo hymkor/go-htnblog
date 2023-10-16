@@ -3,10 +3,15 @@ go-htnblog：はてなブログ投稿用Go言語パッケージ
 
 まだ BASIC 認証でごめん
 
-サンプルツール
------------------------
+サンプル投稿ツール (htnblog)
+----------------------------
 
 [cmd/htnblog/main.go](cmd/htnblog/main.go)
+
+- `htnblog` (オプションなし) … ヘルプ
+- `htnblog list` … 直近10件の記事のリスト
+- `htnblog new` … 新規記事のドラフト作成
+- `htnblog edit` … 直近記事の編集
 
 ```./htnblog |
 Usage: htnblog {list|new|edit}
@@ -26,8 +31,10 @@ Please write your setting on ~/.htnblog as below:
     }
 ```
 
-例: 一覧表示
-------------
+Goライブラリ go-htnblog
+------------------------
+
+### 使用例: 一覧表示
 
 [examples/list.go](examples/list.go)
 
@@ -70,8 +77,7 @@ func main() {
 }
 ```
 
-例: 新規投稿
-------------
+### 使用例: 新規投稿
 
 [examples/post.go](examples/post.go)
 
@@ -107,8 +113,7 @@ func main() {
 }
 ```
 
-例: 最も新しい記事を編集
-------------------------
+### 使用例: 最も新しい記事を編集
 
 [examples/edit.go](examples/edit.go)
 
@@ -154,8 +159,7 @@ func main() {
 }
 ```
 
-設定ファイル例
---------------
+### 設定ファイル例
 
 [sample.json](sample.json)
 
