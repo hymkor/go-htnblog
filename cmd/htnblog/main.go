@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 
@@ -168,7 +169,13 @@ func editEntry(blog *htnblog.Blog) error {
 	return htnblog.Dump(blog.Update(entries[0]))
 }
 
+var version string
+
 func mains(args []string) error {
+	fmt.Printf("%s %s-%s-%s by %s\n",
+		filepath.Base(os.Args[0]),
+		version, runtime.GOOS, runtime.GOARCH, runtime.Version())
+
 	auth, err := config()
 	if err != nil {
 		return err
