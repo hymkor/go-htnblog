@@ -124,9 +124,9 @@ func splitHeaderAndBody(r io.Reader) (map[string][]string, []byte, error) {
 		if strings.HasPrefix(text, "---") {
 			break
 		}
-		name, value, _ := strings.Cut(text, ": ")
+		name, value, _ := strings.Cut(text, ":")
 		name = strings.ToLower(name)
-		header[name] = append(header[name], value)
+		header[name] = append(header[name], strings.TrimSpace(value))
 	}
 	body, err := io.ReadAll(br)
 	return header, body, ignoreEof(err)
