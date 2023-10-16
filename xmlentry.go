@@ -11,7 +11,7 @@ type XmlEntry struct {
 	Title    string     `xml:"title"`
 	Author   string     `xml:"author>name"`
 	Content  XmlContent `xml:content"`
-	IsDraft  string     `xml:"app:control>app:draft"`
+	IsDraft  string     `xml:"app:control>app:draft,omitempty"`
 	Link     []XmlLink  `xml:"link"`
 }
 
@@ -30,9 +30,6 @@ type XmlLink struct {
 }
 
 func (entry *XmlEntry) Marshal() (string, error) {
-	if entry.IsDraft == "" {
-		entry.IsDraft = "yes"
-	}
 	entry.XMLNs = "http://www.w3.org/2005/Atom"
 	entry.XMLNsApp = "http://www.w3.org/2007/app"
 

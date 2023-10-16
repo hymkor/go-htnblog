@@ -45,6 +45,7 @@ func (B *Blog) Post(title, content string) (io.ReadCloser, error) {
 			Type: "text/plain",
 			Body: content,
 		},
+		IsDraft: "yes",
 	}
 	output, err := entry.Marshal()
 	if err != nil {
