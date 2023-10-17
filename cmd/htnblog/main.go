@@ -5,11 +5,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strings"
 	"sync"
@@ -150,7 +152,19 @@ func draftToEntry(draft []byte, entry *htnblog.XmlEntry) error {
 	return nil
 }
 
+var (
+	rxDateTime = regexp.MustCompile(`^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\+\d\d:\d\d$`)
+	updated    = flag.String("updated", "", "(hidden option) set update data")
+)
+
 func editEntry1(blog *htnblog.Blog, entry *htnblog.XmlEntry) error {
+	if *updated != "" {
+		if !rxDateTime.MatchString(*updated) {
+			return fmt.Errorf("%s: invalid date/time format", *updated)
+		}
+		entry.Updated = *updated
+		println(*updated)
+	}
 	draft, err := callEditor(entryToDraft(entry))
 	if err != nil {
 		return err
@@ -237,7 +251,8 @@ Please write your setting on ~/.htnblog as below:
 }
 
 func main() {
-	if err := mains(os.Args[1:]); err != nil {
+	flag.Parse()
+	if err := mains(flag.Args()); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
