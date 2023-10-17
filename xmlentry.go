@@ -5,14 +5,17 @@ import (
 )
 
 type XmlEntry struct {
-	XMLName  xml.Name   `xml:"entry"`
-	XMLNs    string     `xml:"xmlns,attr"`
-	XMLNsApp string     `xml:"xmlns:app,attr"`
-	Title    string     `xml:"title"`
-	Author   string     `xml:"author>name"`
-	Content  XmlContent `xml:content"`
-	IsDraft  string     `xml:"app:control>app:draft,omitempty"`
-	Link     []XmlLink  `xml:"link"`
+	XMLName   xml.Name   `xml:"entry"`
+	XMLNs     string     `xml:"xmlns,attr"`
+	XMLNsApp  string     `xml:"xmlns:app,attr"`
+	Title     string     `xml:"title"`
+	Author    string     `xml:"author>name"`
+	Content   XmlContent `xml:content"`
+	IsDraft   string     `xml:"app:control>app:draft,omitempty"`
+	Link      []XmlLink  `xml:"link"`
+	Updated   string     `xml:"updated,omitempty"`
+	Published string     `xml:"published,omitempty"`
+	AppEdited string     `xml:"app:edited,omitempty"`
 }
 
 type XmlContent struct {
