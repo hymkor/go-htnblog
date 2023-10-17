@@ -150,7 +150,26 @@ func draftToEntry(draft []byte, entry *htnblog.XmlEntry) error {
 	return nil
 }
 
-func editEntry(blog *htnblog.Blog) error {
+func editEntry1(blog *htnblog.Blog, entry *htnblog.XmlEntry) error {
+	draft, err := callEditor(entryToDraft(entry))
+	if err != nil {
+		return err
+	}
+	if err := draftToEntry(draft, entry); err != nil {
+		return err
+	}
+	return htnblog.Dump(blog.Update(entry))
+}
+
+func url2id(url string) string {
+	index := strings.LastIndexByte(url, '/')
+	if index < 0 {
+		return ""
+	}
+	return url[index+1:]
+}
+
+func editEntry(blog *htnblog.Blog, args []string) error {
 	entries, err := blog.List()
 	if err != nil {
 		return err
@@ -158,15 +177,16 @@ func editEntry(blog *htnblog.Blog) error {
 	if len(entries) <= 0 {
 		return errors.New("no entries")
 	}
-
-	draft, err := callEditor(entryToDraft(entries[0]))
-	if err != nil {
-		return err
+	if len(args) <= 0 {
+		return editEntry1(blog, entries[0])
 	}
-	if err := draftToEntry(draft, entries[0]); err != nil {
-		return err
+	for _, entry1 := range entries {
+		id := url2id(entry1.EditUrl())
+		if id != "" && id == args[0] {
+			return editEntry1(blog, entry1)
+		}
 	}
-	return htnblog.Dump(blog.Update(entries[0]))
+	return fmt.Errorf("%s: entry not found", args[0])
 }
 
 var version string
@@ -210,7 +230,7 @@ Please write your setting on ~/.htnblog as below:
 	case "new":
 		return newEntry(blog)
 	case "edit":
-		return editEntry(blog)
+		return editEntry(blog, args[1:])
 	default:
 		return fmt.Errorf("%s: no such subcommand", args[0])
 	}
