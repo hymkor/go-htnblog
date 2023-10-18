@@ -162,17 +162,17 @@ func draftToEntry(draft []byte, entry *htnblog.XmlEntry) error {
 }
 
 var (
-	rxDateTime = regexp.MustCompile(`^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\+\d\d:\d\d$`)
-	updated    = flag.String("updated", "", "(hidden option) set update data")
+	rxDateTime  = regexp.MustCompile(`^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\+\d\d:\d\d$`)
+	flagUpdated = flag.String("updated", "", "(experimental) set the updated date like 2006-01-02T15:04:05-07:00")
 )
 
 func editEntry1(blog *htnblog.Blog, entry *htnblog.XmlEntry) error {
-	if *updated != "" {
-		if !rxDateTime.MatchString(*updated) {
-			return fmt.Errorf("%s: invalid date/time format", *updated)
+	if *flagUpdated != "" {
+		if !rxDateTime.MatchString(*flagUpdated) {
+			return fmt.Errorf("%s: invalid date/time format", *flagUpdated)
 		}
-		entry.Updated = *updated
-		println(*updated)
+		entry.Updated = *flagUpdated
+		println(*flagUpdated)
 	}
 	draft, err := callEditor(entryToDraft(entry))
 	if err != nil {
