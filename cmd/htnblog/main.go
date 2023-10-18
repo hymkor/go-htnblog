@@ -205,10 +205,6 @@ func editEntry(blog *htnblog.Blog, args []string) error {
 var version string
 
 func mains(args []string) error {
-	fmt.Printf("%s %s-%s-%s by %s\n",
-		filepath.Base(os.Args[0]),
-		version, runtime.GOOS, runtime.GOARCH, runtime.Version())
-
 	auth, err := config()
 	if err != nil {
 		return err
@@ -218,8 +214,12 @@ func mains(args []string) error {
 		return err
 	}
 	if len(args) < 1 {
-		io.WriteString(os.Stderr,
-			`Usage: htnblog {list|new|edit}
+		fmt.Fprintf(os.Stderr, "%s %s-%s-%s by %s\n",
+			filepath.Base(os.Args[0]),
+			version, runtime.GOOS, runtime.GOARCH, runtime.Version())
+
+		io.WriteString(os.Stderr, `
+Usage: htnblog {list|new|edit}
   htnblog list ... show recent articles
   htnblog new  ... create new draft
   htnblog edit ... edit the latest article
