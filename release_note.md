@@ -1,3 +1,7 @@
+v0.3.0
+======
+(2023.10.18)
+
 - `htnblog.exe list`: URLではなく entry-id を表示するようにした
 - `htnblog.exe`: 引数が与えられなかった時だけバージョンを表示するようにした
 - `htnblog list`, `htnblog edit` で @0～@9 を entry-id の別名として使えるようにした
