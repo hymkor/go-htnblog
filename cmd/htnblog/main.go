@@ -19,12 +19,19 @@ import (
 	"github.com/hymkor/go-htnblog"
 )
 
+var flagRcFile = flag.String("rc", "", "use string instead of ~/.htnblog")
+
 var config = sync.OnceValues(func() ([]byte, error) {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return nil, err
+	var configPath string
+	if *flagRcFile != "" {
+		configPath = *flagRcFile
+	} else {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return nil, err
+		}
+		configPath = filepath.Join(home, ".htnblog")
 	}
-	configPath := filepath.Join(home, ".htnblog")
 	bin, err := os.ReadFile(configPath)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", configPath, err)
