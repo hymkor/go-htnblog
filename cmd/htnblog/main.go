@@ -19,7 +19,7 @@ import (
 	"github.com/hymkor/go-htnblog"
 )
 
-var flagRcFile = flag.String("rc", "", "use string instead of ~/.htnblog")
+var flagRcFile = flag.String("rc", "", "use the specified file instead of ~/.htnblog")
 
 var config = sync.OnceValues(func() ([]byte, error) {
 	var configPath string
@@ -236,9 +236,9 @@ func mains(args []string) error {
 
 		io.WriteString(os.Stderr, `
 Usage: htnblog {list|new|edit}
-  htnblog list ... show recent articles
-  htnblog new  ... create new draft
-  htnblog edit ... edit the latest article
+  htnblog list                     ... show recent articles
+  htnblog new                      ... create a new draft
+  htnblog edit {ENTRY-ID|@0|..|@9} ... edit the article
     The lines in the draft up to "---" are the header lines,
     and the rest is the article body.
 
@@ -250,7 +250,9 @@ Please write your setting on ~/.htnblog as below:
         "author":"(YOUR NAME)",
         "editor":"(YOUR EDITOR.THIS IS for cmd/htnblog/main.go)"
     }
+
 `)
+		flag.PrintDefaults()
 		return nil
 	}
 	switch args[0] {
