@@ -38,8 +38,7 @@ func list(blog *htnblog.Blog) error {
 		return err
 	}
 	for _, entry1 := range entries {
-		fmt.Println(entry1.Title)
-		fmt.Println(entry1.EditUrl())
+		fmt.Println(url2id(entry1.EditUrl()), entry1.Title)
 	}
 	return nil
 }
