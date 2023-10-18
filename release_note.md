@@ -1,3 +1,9 @@
+- `htnblog.exe list`: URLではなく entry-id を表示するようにした
+- `htnblog.exe`: 引数が与えられなかった時だけバージョンを表示するようにした
+- `htnblog list`, `htnblog edit` で @0～@9 を entry-id の別名として使えるようにした
+- `htnblog.exe`: .htnblog のかわりに使うファイルを指定する -rc FILENAME オプションを追加
+- 設定からフィールド author を削除。userid を使用するようにした
+
 v0.2.0
 ======
 (2023.10.17)
