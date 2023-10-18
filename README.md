@@ -35,7 +35,6 @@ scoop install htnblog
     "userid":"(YOUR_HATENA_ID)",
     "endpointurl":"(END_POINT_URL)",
     "apikey":"(YOUR API KEY)",
-    "author":"(YOUR NAME)",
     "editor":"(YOUR EDITOR FULLPATH))"
 }
 ```
@@ -51,13 +50,15 @@ scoop install htnblog
 - `htnblog` (オプションなし) … ヘルプ
 - `htnblog list` … 直近10件の記事のリスト
 - `htnblog new` … 新規記事のドラフトを作成
-- `htnblog edit` … 直近記事の編集
+- `htnblog edit {ENTRY-ID|@0|...@9}` … 既存記事の編集
 
 ```./htnblog |
+htnblog v0.2.0-10-gbb8f0f4-windows-amd64 by go1.21.3
+
 Usage: htnblog {list|new|edit}
-  htnblog list ... show recent articles
-  htnblog new  ... create new draft
-  htnblog edit ... edit the latest article
+  htnblog list                     ... show recent articles
+  htnblog new                      ... create a new draft
+  htnblog edit {ENTRY-ID|@0|..|@9} ... edit the article
     The lines in the draft up to "---" are the header lines,
     and the rest is the article body.
 
@@ -66,9 +67,13 @@ Please write your setting on ~/.htnblog as below:
         "userid":"(YOUR_USER_ID)",
         "endpointurl":"(END_POINT_URL)",
         "apikey":"(YOUR API KEY)",
-        "author":"(YOUR NAME)",
         "editor":"(YOUR EDITOR.THIS IS for cmd/htnblog/main.go)"
     }
+
+  -rc string
+    	use the specified file instead of ~/.htnblog
+  -updated string
+    	(experimental) set the updated date like 2006-01-02T15:04:05-07:00
 ```
 
 Goライブラリ go-htnblog
@@ -77,6 +82,8 @@ Goライブラリ go-htnblog
 ### 使用例: 一覧表示
 
 [examples/list.go](examples/list.go)
+
+設定は標準入力から読み込むようにしてます。ブログに投稿するためのアカウント情報を保持する htnblog.Blog型のインスタンスは `htnblog.NewFromJSON` 関数で JSON テキストから生成していますが、別に `&Blog{...}` でいきなり生成しても構いません。
 
 ```examples/list.go
 package main
@@ -120,6 +127,8 @@ func main() {
 ### 使用例: 新規投稿
 
 [examples/post.go](examples/post.go)
+
+`(*Blog) Post` 関数は戻り値としてウェブアクセスの返信を io.ReadCloser と error で返してきます。 いちいち処理するのが面倒なので `htnblog.Dump` という関数を用意して、そのまま標準出力に転送して Close させています。
 
 ```examples/post.go
 package main
@@ -196,19 +205,5 @@ func main() {
         fmt.Fprintln(os.Stderr, err.Error())
         os.Exit(1)
     }
-}
-```
-
-### 設定ファイル例
-
-[sample.json](sample.json)
-
-```sample.json
-{
-    "userid":"(YOUR_USER_ID)",
-    "endpointurl":"(END_POINT_URL)",
-    "apikey":"(YOUR API KEY)",
-    "author":"(YOUR NAME)",
-    "editor":"(YOUR EDITOR.THIS IS for cmd/htnblog/main.go)"
 }
 ```
