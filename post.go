@@ -13,7 +13,6 @@ type Blog struct {
 	UserId      string `json:"userid"`
 	EndPointUrl string `json:"endpointurl"`
 	ApiKey      string `json:"apikey"`
-	Author      string `json:"author"`
 }
 
 func NewFromJSON(json1 []byte) (*Blog, error) {
@@ -39,8 +38,7 @@ func (B *Blog) request(method, endPointUrl string, r io.Reader) (io.ReadCloser, 
 
 func (B *Blog) Post(title, content string) (io.ReadCloser, error) {
 	entry := &XmlEntry{
-		Title:  title,
-		Author: B.Author,
+		Title: title,
 		Content: XmlContent{
 			Type: "text/plain",
 			Body: content,

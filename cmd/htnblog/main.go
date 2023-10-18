@@ -247,7 +247,6 @@ Please write your setting on ~/.htnblog as below:
         "userid":"(YOUR_USER_ID)",
         "endpointurl":"(END_POINT_URL)",
         "apikey":"(YOUR API KEY)",
-        "author":"(YOUR NAME)",
         "editor":"(YOUR EDITOR.THIS IS for cmd/htnblog/main.go)"
     }
 
