@@ -37,8 +37,11 @@ func list(blog *htnblog.Blog) error {
 	if err != nil {
 		return err
 	}
-	for _, entry1 := range entries {
-		fmt.Println(url2id(entry1.EditUrl()), entry1.Title)
+	for i, entry1 := range entries {
+		fmt.Printf("@%d %s %s\n",
+			i,
+			url2id(entry1.EditUrl()),
+			entry1.Title)
 	}
 	return nil
 }
@@ -192,6 +195,12 @@ func editEntry(blog *htnblog.Blog, args []string) error {
 	}
 	if len(args) <= 0 {
 		return editEntry1(blog, entries[0])
+	}
+	if len(args[0]) == 2 && args[0][0] == '@' {
+		nth := int(args[0][1] - '0')
+		if nth >= 0 && nth < len(entries) {
+			return editEntry1(blog, entries[nth])
+		}
 	}
 	for _, entry1 := range entries {
 		id := url2id(entry1.EditUrl())
