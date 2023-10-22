@@ -98,7 +98,9 @@ func newEntry(blog *htnblog.Blog) error {
 	if err != nil {
 		return err
 	}
-
+	if len(bytes.TrimSpace(draft)) == 0 {
+		return errors.New("Your draft is empty. Posting is canceled.")
+	}
 	header, body, err := splitHeaderAndBody(bytes.NewReader(draft))
 	if err != nil {
 		return err
