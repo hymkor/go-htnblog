@@ -9,7 +9,7 @@ type XmlEntry struct {
 	XMLNs     string     `xml:"xmlns,attr"`
 	XMLNsApp  string     `xml:"xmlns:app,attr"`
 	Title     string     `xml:"title"`
-	Content   XmlContent `xml:content"`
+	Content   XmlContent `xml:"content"`
 	IsDraft   string     `xml:"app:control>app:draft,omitempty"`
 	Link      []XmlLink  `xml:"link"`
 	Updated   string     `xml:"updated,omitempty"`
