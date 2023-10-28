@@ -10,11 +10,16 @@ type XmlEntry struct {
 	XMLNsApp  string     `xml:"xmlns:app,attr"`
 	Title     string     `xml:"title"`
 	Content   XmlContent `xml:"content"`
-	IsDraft   string     `xml:"app:control>app:draft,omitempty"`
 	Link      []XmlLink  `xml:"link"`
 	Updated   string     `xml:"updated,omitempty"`
 	Published string     `xml:"published,omitempty"`
 	AppEdited string     `xml:"app:edited,omitempty"`
+	Control   XmlControl `xml:"http://www.w3.org/2007/app control"`
+}
+
+type XmlControl struct {
+	XMLName xml.Name `xml:"http://www.w3.org/2007/app control"`
+	Draft   string   `xml:"http://www.w3.org/2007/app draft,omitempty"`
 }
 
 type XmlContent struct {

@@ -149,6 +149,7 @@ func splitHeaderAndBody(r io.Reader) (map[string][]string, []byte, error) {
 func entryToDraft(entry *htnblog.XmlEntry) []byte {
 	var buffer bytes.Buffer
 	fmt.Fprintf(&buffer, "Title: %s\n", entry.Title)
+	// fmt.Fprintf(&buffer, "Draft: %s\n", entry.Control.Draft)
 	fmt.Fprintf(&buffer, "---\n%s", entry.Content.Body)
 	return buffer.Bytes()
 }
@@ -159,6 +160,7 @@ func draftToEntry(draft []byte, entry *htnblog.XmlEntry) error {
 		return err
 	}
 	entry.Title = strings.Join(header["title"], " ")
+	// entry.Control.Draft = strings.Join(header["draft"], " ")
 	entry.Content.Body = string(body)
 	return nil
 }
