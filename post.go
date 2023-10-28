@@ -13,6 +13,7 @@ type Blog struct {
 	UserId      string `json:"userid"`
 	EndPointUrl string `json:"endpointurl"`
 	ApiKey      string `json:"apikey"`
+	DebugPrint  io.Writer
 }
 
 func NewFromJSON(json1 []byte) (*Blog, error) {
@@ -58,6 +59,11 @@ func (B *Blog) Update(entry *XmlEntry) (io.ReadCloser, error) {
 	output, err := entry.Marshal()
 	if err != nil {
 		return nil, fmt.Errorf("Marshal: %w", err)
+	}
+	if B.DebugPrint != nil {
+		fmt.Fprintln(B.DebugPrint, "<<< SendData >>>")
+		io.WriteString(B.DebugPrint, output)
+		fmt.Fprintln(B.DebugPrint, "<<< /SendData >>>")
 	}
 	return B.request(http.MethodPut, entry.EditUrl(), strings.NewReader(output))
 }

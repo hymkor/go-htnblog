@@ -233,6 +233,7 @@ func mains(args []string) error {
 	if err != nil {
 		return err
 	}
+	blog.DebugPrint = os.Stderr
 	if len(args) < 1 {
 		fmt.Fprintf(os.Stderr, "%s %s-%s-%s by %s\n",
 			filepath.Base(os.Args[0]),
