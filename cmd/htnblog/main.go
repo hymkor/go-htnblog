@@ -74,7 +74,7 @@ func whichEditor() string {
 }
 
 func callEditor(draft []byte) ([]byte, error) {
-	tempPath := filepath.Join(os.TempDir(), "htnblog-tmp.md")
+	tempPath := filepath.Join(os.TempDir(), fmt.Sprintf("htnblog-%d.md", os.Getpid()))
 	os.WriteFile(tempPath, draft, 0600)
 	defer os.Remove(tempPath)
 
