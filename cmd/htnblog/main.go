@@ -16,6 +16,9 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/hymkor/go-windows1x-virtualterminal"
+	"github.com/hymkor/go-windows1x-virtualterminal/keyin"
+
 	"github.com/hymkor/go-htnblog"
 )
 
@@ -73,24 +76,63 @@ func whichEditor() string {
 	return editor
 }
 
-func callEditor(draft []byte) ([]byte, error) {
-	tempPath := filepath.Join(os.TempDir(), fmt.Sprintf("htnblog-%d.md", os.Getpid()))
-	os.WriteFile(tempPath, draft, 0600)
-	defer os.Remove(tempPath)
+func askYesNoEdit() (rune, error) {
+	if closer, err := keyin.Raw(); err == nil {
+		defer closer()
+	}
+	for {
+		io.WriteString(os.Stdout, "Are you sure to post ? (Yes/No/Edit): ")
+		key, err := keyin.Get()
+		if err != nil {
+			return 0, err
+		}
+		fmt.Println(key)
+		key = strings.ToLower(key)
+		if key[0] == 'y' || key[0] == '\r' {
+			return 'y', nil
+		}
+		if key[0] == 'n' {
+			return 'n', nil
+		}
+		if key[0] == 'e' {
+			return 'e', nil
+		}
+	}
+}
 
+func callEditor(draft []byte) ([]byte, error) {
 	editor := whichEditor()
 	if editor == "" {
 		return nil, errors.New(`Editor not found. Please set $EDITOR or { "editor":"(YOUR-EDITOR)}" on ~/.htnblog`)
 	}
-	cmd := exec.Command(editor, tempPath)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err := cmd.Run()
-	if err != nil {
-		return nil, fmt.Errorf("Editor `%s` aborted\n%s", editor, err)
+	tempPath := filepath.Join(os.TempDir(), fmt.Sprintf("htnblog-%d.md", os.Getpid()))
+	os.WriteFile(tempPath, draft, 0600)
+	//defer os.Remove(tempPath)
+
+	for {
+		cmd := exec.Command(editor, tempPath)
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err := cmd.Run()
+		if err != nil {
+			return nil, fmt.Errorf("`\"%s\" \"%s\"` aborted\n%s", editor, tempPath, err)
+		}
+		text, err := os.ReadFile(tempPath)
+		if err != nil {
+			return nil, fmt.Errorf("%w. your draft was expected to be saved as '%s'", err, tempPath)
+		}
+		key, err := askYesNoEdit()
+		if err != nil {
+			return nil, fmt.Errorf("%w. your draft is saved as '%s'", err, tempPath)
+		}
+		if key == 'y' {
+			os.Remove(tempPath)
+			return text, nil
+		} else if key == 'n' {
+			return nil, fmt.Errorf("posting is canceled. your draft is saved as '%s'", tempPath)
+		}
 	}
-	return os.ReadFile(tempPath)
 }
 
 func newEntry(blog *htnblog.Blog) error {
@@ -272,6 +314,10 @@ Please write your setting on ~/.htnblog as below:
 }
 
 func main() {
+	if closer, err := virtualterminal.EnableStdin(); err == nil {
+		defer closer()
+	}
+
 	flag.Parse()
 	if err := mains(flag.Args()); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
