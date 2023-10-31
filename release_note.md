@@ -1,4 +1,5 @@
 - 一時ファイル名にプロセスIDを使うようにした (`$TEMP/htnblog-(PID).md`)
+- 投稿前に `Are you sure to post ? (Yes/No/Edit):` と尋ねるようにした
 
 v0.3.1
 ======
