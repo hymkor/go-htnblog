@@ -1,5 +1,7 @@
 - 一時ファイル名にプロセスIDを使うようにした (`$TEMP/htnblog-(PID).md`)
 - 投稿前に `Are you sure to post ? (Yes/No/Edit):` と尋ねるようにした
+- 使用済みのドラフトテキストファイルは、即削除ではなく、OSのゴミ箱に移動するようにした  
+  (非Windowsでは、 [freedesktop.org のデスクトップのゴミ箱仕様](https://www.freedesktop.org/wiki/Specifications/trash-spec/) に準拠した形で "the home trash" へ移動)
 
 v0.3.1
 ======
