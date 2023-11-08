@@ -18,6 +18,7 @@ import (
 
 	"github.com/hymkor/go-windows1x-virtualterminal"
 	"github.com/hymkor/go-windows1x-virtualterminal/keyin"
+	"github.com/hymkor/trash-go"
 
 	"github.com/hymkor/go-htnblog"
 )
@@ -107,7 +108,7 @@ func callEditor(draft []byte) ([]byte, error) {
 	}
 	tempPath := filepath.Join(os.TempDir(), fmt.Sprintf("htnblog-%d.md", os.Getpid()))
 	os.WriteFile(tempPath, draft, 0600)
-	//defer os.Remove(tempPath)
+	defer trash.Throw(tempPath)
 
 	for {
 		cmd := exec.Command(editor, tempPath)
@@ -116,21 +117,20 @@ func callEditor(draft []byte) ([]byte, error) {
 		cmd.Stderr = os.Stderr
 		err := cmd.Run()
 		if err != nil {
-			return nil, fmt.Errorf("`\"%s\" \"%s\"` aborted\n%s", editor, tempPath, err)
+			return nil, fmt.Errorf("%w\n\"%s\" aborted", err, editor)
 		}
 		text, err := os.ReadFile(tempPath)
 		if err != nil {
-			return nil, fmt.Errorf("%w. your draft was expected to be saved as '%s'", err, tempPath)
+			return nil, err
 		}
 		key, err := askYesNoEdit()
 		if err != nil {
-			return nil, fmt.Errorf("%w. your draft is saved as '%s'", err, tempPath)
+			return nil, err
 		}
 		if key == 'y' {
-			os.Remove(tempPath)
 			return text, nil
 		} else if key == 'n' {
-			return nil, fmt.Errorf("posting is canceled. your draft is saved as '%s'", tempPath)
+			return nil, errors.New("post is canceled")
 		}
 	}
 }
