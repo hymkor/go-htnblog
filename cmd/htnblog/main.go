@@ -238,30 +238,47 @@ func url2id(url string) string {
 	return url[index+1:]
 }
 
-func editEntry(blog *htnblog.Blog, args []string) error {
+func chooseEntry(blog *htnblog.Blog, args []string) (*htnblog.XmlEntry, error) {
 	entries, err := blog.List()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if len(entries) <= 0 {
-		return errors.New("no entries")
+		return nil, errors.New("no entries")
 	}
 	if len(args) <= 0 {
-		return editEntry1(blog, entries[0])
+		return entries[0], nil
 	}
 	if len(args[0]) == 2 && args[0][0] == '@' {
 		nth := int(args[0][1] - '0')
 		if nth >= 0 && nth < len(entries) {
-			return editEntry1(blog, entries[nth])
+			return entries[nth], nil
 		}
 	}
 	for _, entry1 := range entries {
 		id := url2id(entry1.EditUrl())
 		if id != "" && id == args[0] {
-			return editEntry1(blog, entry1)
+			return entry1, nil
 		}
 	}
-	return fmt.Errorf("%s: entry not found", args[0])
+	return nil, fmt.Errorf("%s: entry not found", args[0])
+}
+
+func editEntry(blog *htnblog.Blog, args []string) error {
+	entry, err := chooseEntry(blog, args)
+	if err != nil {
+		return err
+	}
+	return editEntry1(blog, entry)
+}
+
+func typeEntry(blog *htnblog.Blog, args []string) error {
+	entry, err := chooseEntry(blog, args)
+	if err != nil {
+		return err
+	}
+	os.Stdout.Write(entryToDraft(entry))
+	return nil
 }
 
 var version string
@@ -282,9 +299,10 @@ func mains(args []string) error {
 			version, runtime.GOOS, runtime.GOARCH, runtime.Version())
 
 		io.WriteString(os.Stderr, `
-Usage: htnblog {list|new|edit}
+Usage: htnblog {list|new|type|edit}
   htnblog list                     ... show recent articles
   htnblog new                      ... create a new draft
+  htnblog type {ENTRY-ID|@0|..|@9} ... output the article to STDOUT
   htnblog edit {ENTRY-ID|@0|..|@9} ... edit the article
     The lines in the draft up to "---" are the header lines,
     and the rest is the article body.
@@ -308,6 +326,8 @@ Please write your setting on ~/.htnblog as below:
 		return newEntry(blog)
 	case "edit":
 		return editEntry(blog, args[1:])
+	case "type":
+		return typeEntry(blog, args[1:])
 	default:
 		return fmt.Errorf("%s: no such subcommand", args[0])
 	}
