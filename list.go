@@ -12,6 +12,11 @@ type xmlFeed struct {
 	XMLNs    string      `xml:"xmlns,attr"`
 	XMLNsApp string      `xml:"xmlns:app,attr"`
 	Entry    []*XmlEntry `xml:"entry"`
+	Link     []XmlLink   `xml:"link"`
+}
+
+func (feed *xmlFeed) NextUrl() string {
+	return findLink("next", feed.Link)
 }
 
 func (B *Blog) get(url string, v interface{}) error {
