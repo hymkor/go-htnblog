@@ -13,10 +13,24 @@ type xmlFeed struct {
 	XMLNsApp string      `xml:"xmlns:app,attr"`
 	Entry    []*XmlEntry `xml:"entry"`
 	Link     []XmlLink   `xml:"link"`
+	b        *Blog
 }
 
 func (feed *xmlFeed) NextUrl() string {
 	return findLink("next", feed.Link)
+}
+
+func (feed *xmlFeed) ListNext() (*xmlFeed, error) {
+	nextUrl := feed.NextUrl()
+	if nextUrl == "" {
+		return nil, io.EOF
+	}
+	var nextFeed xmlFeed
+	if err := feed.b.get(nextUrl, &nextFeed); err != nil {
+		return nil, err
+	}
+	nextFeed.b = feed.b
+	return &nextFeed, nil
 }
 
 func (B *Blog) get(url string, v interface{}) error {
@@ -36,12 +50,37 @@ func (B *Blog) get(url string, v interface{}) error {
 	return nil
 }
 
-func (B *Blog) List() ([]*XmlEntry, error) {
+func (B *Blog) listFirst() (*xmlFeed, error) {
 	var feed xmlFeed
 	if err := B.get(B.EndPointUrl+"/entry", &feed); err != nil {
 		return nil, err
 	}
-	return feed.Entry, nil
+	feed.b = B
+	return &feed, nil
+}
+
+func (B *Blog) List() ([]*XmlEntry, error) {
+	if f, err := B.listFirst(); err != nil {
+		return nil, err
+	} else {
+		return f.Entry, nil
+	}
+}
+
+func (B *Blog) EachEntry(callback func(*XmlEntry) bool) error {
+	f, err := B.listFirst()
+	for err == nil {
+		for _, entry := range f.Entry {
+			if !callback(entry) {
+				return nil
+			}
+		}
+		f, err = f.ListNext()
+	}
+	if err == io.EOF {
+		return nil
+	}
+	return err
 }
 
 func (B *Blog) Get(entryId string) (*XmlEntry, error) {
