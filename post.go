@@ -22,6 +22,11 @@ func NewFromJSON(json1 []byte) (*Blog, error) {
 	return blog, err
 }
 
+func drop(r io.ReadCloser) {
+	io.Copy(io.Discard, r)
+	r.Close()
+}
+
 func (B *Blog) request(method, endPointUrl string, r io.Reader) (io.ReadCloser, error) {
 	req, err := http.NewRequest(method, endPointUrl, r)
 	if err != nil {
@@ -32,7 +37,12 @@ func (B *Blog) request(method, endPointUrl string, r io.Reader) (io.ReadCloser, 
 	var client http.Client
 	res, err := client.Do(req)
 	if err != nil {
+		drop(res.Body)
 		return nil, fmt.Errorf("(http.Client) Do: %w", err)
+	}
+	if len(res.Status) < 1 || res.Status[0] != '2' {
+		drop(res.Body)
+		return nil, fmt.Errorf("(http.Client) Do: Status: %s", res.Status)
 	}
 	return res.Body, nil
 }
