@@ -47,11 +47,15 @@ func (entry *XmlEntry) Marshal() (string, error) {
 	return xml.Header + string(result), nil
 }
 
-func (entry *XmlEntry) EditUrl() string {
-	for _, link := range entry.Link {
-		if link.Rel == "edit" {
+func findLink(rel string, links []XmlLink) string {
+	for _, link := range links {
+		if link.Rel == rel {
 			return link.Href
 		}
 	}
 	return ""
+}
+
+func (entry *XmlEntry) EditUrl() string {
+	return findLink("edit", entry.Link)
 }
