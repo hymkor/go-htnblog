@@ -39,6 +39,14 @@ func (B *Blog) List() ([]*XmlEntry, error) {
 	return feed.Entry, nil
 }
 
+func (B *Blog) Get(entryId string) (*XmlEntry, error) {
+	var entry XmlEntry
+	if err := B.get(B.EndPointUrl+"/entry/"+entryId, &entry); err != nil {
+		return nil, err
+	}
+	return &entry, nil
+}
+
 func (B *Blog) Dump(w io.Writer) error {
 	body, err := B.request(http.MethodGet, B.EndPointUrl+"/entry", nil)
 	if err != nil {
