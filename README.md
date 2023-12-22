@@ -207,3 +207,9 @@ func main() {
     }
 }
 ```
+
+Refrences
+---------
+
+* [はてなブログAtomPub - はてなブログ ヘルプ](https://help.hatenablog.com/entry/atompub)
+* [はてなブログAtomPub | Hatena Developer Center](https://developer.hatena.ne.jp/ja/documents/blog/apis/atom/)
