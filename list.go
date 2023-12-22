@@ -14,20 +14,27 @@ type xmlFeed struct {
 	Entry    []*XmlEntry `xml:"entry"`
 }
 
-func (B *Blog) List() ([]*XmlEntry, error) {
-	body, err := B.request(http.MethodGet, B.EndPointUrl+"/entry", nil)
+func (B *Blog) get(url string, v interface{}) error {
+	body, err := B.request(http.MethodGet, url, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer body.Close()
-	feedBin, err := io.ReadAll(body)
+	bin, err := io.ReadAll(body)
 	if err != nil {
-		return nil, fmt.Errorf("io.ReadAll: %w", err)
+		return fmt.Errorf("io.ReadAll: %w", err)
 	}
-	var feed xmlFeed
-	err = xml.Unmarshal(feedBin, &feed)
+	err = xml.Unmarshal(bin, v)
 	if err != nil {
-		return nil, fmt.Errorf("xml.Unmarshal: %w", err)
+		return fmt.Errorf("xml.Unmarshal: %w", err)
+	}
+	return nil
+}
+
+func (B *Blog) List() ([]*XmlEntry, error) {
+	var feed xmlFeed
+	if err := B.get(B.EndPointUrl+"/entry", &feed); err != nil {
+		return nil, err
 	}
 	return feed.Entry, nil
 }
