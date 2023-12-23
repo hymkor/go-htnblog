@@ -257,15 +257,28 @@ func chooseEntry(blog *htnblog.Blog, args []string) (*htnblog.XmlEntry, error) {
 		}
 	}
 	var result *htnblog.XmlEntry
+	var err error
 
-	err := blog.EachEntry(func(entry1 *htnblog.XmlEntry) bool {
-		id := url2id(entry1.EditUrl())
-		if id != "" && id == args[0] {
-			result = entry1
-			return false
-		}
-		return true
-	})
+	if strings.HasPrefix(args[0], "http") {
+		err = blog.EachEntry(func(entry1 *htnblog.XmlEntry) bool {
+			url := entry1.AlternateUrl()
+			if url != "" && url == args[0] {
+				result = entry1
+				return false
+			}
+			return true
+		})
+	} else {
+		err = blog.EachEntry(func(entry1 *htnblog.XmlEntry) bool {
+			id := url2id(entry1.EditUrl())
+			if id != "" && id == args[0] {
+				result = entry1
+				return false
+			}
+			return true
+		})
+	}
+
 	if err != nil {
 		return nil, err
 	}
