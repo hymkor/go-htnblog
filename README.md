@@ -50,15 +50,16 @@ scoop install htnblog
 - `htnblog` (オプションなし) … ヘルプ
 - `htnblog list` … 直近10件の記事のリスト
 - `htnblog new` … 新規記事のドラフトを作成
-- `htnblog edit {ENTRY-ID|@0|...@9}` … 既存記事の編集
+- `htnblog edit {URL|@0|@1|…}` … 既存記事の編集
 
 ```./htnblog |
-htnblog v0.2.0-10-gbb8f0f4-windows-amd64 by go1.21.3
+htnblog v0.5.0-windows-amd64 by go1.21.5
 
-Usage: htnblog {list|new|edit}
-  htnblog list                     ... show recent articles
-  htnblog new                      ... create a new draft
-  htnblog edit {ENTRY-ID|@0|..|@9} ... edit the article
+Usage: htnblog {list|new|type|edit}
+  htnblog list                ... show recent articles
+  htnblog new                 ... create a new draft
+  htnblog type {URL|@0|@1|..} ... output the article to STDOUT
+  htnblog edit {URL|@0|@1|..} ... edit the article
     The lines in the draft up to "---" are the header lines,
     and the rest is the article body.
 
@@ -70,6 +71,8 @@ Please write your setting on ~/.htnblog as below:
         "editor":"(YOUR EDITOR.THIS IS for cmd/htnblog/main.go)"
     }
 
+  -n int
+    	fetch articles (default 100)
   -rc string
     	use the specified file instead of ~/.htnblog
   -updated string
