@@ -324,10 +324,10 @@ func mains(args []string) error {
 
 		io.WriteString(os.Stderr, `
 Usage: htnblog {list|new|type|edit}
-  htnblog list                     ... show recent articles
-  htnblog new                      ... create a new draft
-  htnblog type {ENTRY-ID|@0|..|@9} ... output the article to STDOUT
-  htnblog edit {ENTRY-ID|@0|..|@9} ... edit the article
+  htnblog list                ... show recent articles
+  htnblog new                 ... create a new draft
+  htnblog type {URL|@0|@1|..} ... output the article to STDOUT
+  htnblog edit {URL|@0|@1|..} ... edit the article
     The lines in the draft up to "---" are the header lines,
     and the rest is the article body.
 
