@@ -16,12 +16,12 @@ type xmlFeed struct {
 	b        *Blog
 }
 
-func (feed *xmlFeed) NextUrl() string {
+func (feed *xmlFeed) nextUrl() string {
 	return findLink("next", feed.Link)
 }
 
 func (feed *xmlFeed) ListNext() (*xmlFeed, error) {
-	nextUrl := feed.NextUrl()
+	nextUrl := feed.nextUrl()
 	if nextUrl == "" {
 		return nil, io.EOF
 	}
