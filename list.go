@@ -83,6 +83,18 @@ func (B *Blog) EachEntry(callback func(*XmlEntry) bool) error {
 	return err
 }
 
+func (B *Blog) Index(i int) *XmlEntry {
+	f, err := B.listFirst()
+	for err == nil {
+		if i < len(f.Entry) {
+			return f.Entry[i]
+		}
+		i -= len(f.Entry)
+		f, err = f.ListNext()
+	}
+	return nil
+}
+
 func (B *Blog) Get(entryId string) (*XmlEntry, error) {
 	var entry XmlEntry
 	if err := B.get(B.EndPointUrl+"/entry/"+entryId, &entry); err != nil {
