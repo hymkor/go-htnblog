@@ -20,7 +20,7 @@ func (feed *xmlFeed) nextUrl() string {
 	return findLink("next", feed.Link)
 }
 
-func (feed *xmlFeed) ListNext() (*xmlFeed, error) {
+func (feed *xmlFeed) listNext() (*xmlFeed, error) {
 	nextUrl := feed.nextUrl()
 	if nextUrl == "" {
 		return nil, io.EOF
@@ -75,7 +75,7 @@ func (B *Blog) EachEntry(callback func(*XmlEntry) bool) error {
 				return nil
 			}
 		}
-		f, err = f.ListNext()
+		f, err = f.listNext()
 	}
 	if err == io.EOF {
 		return nil
@@ -90,7 +90,7 @@ func (B *Blog) Index(i int) *XmlEntry {
 			return f.Entry[i]
 		}
 		i -= len(f.Entry)
-		f, err = f.ListNext()
+		f, err = f.listNext()
 	}
 	return nil
 }
