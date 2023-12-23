@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -239,29 +240,39 @@ func url2id(url string) string {
 }
 
 func chooseEntry(blog *htnblog.Blog, args []string) (*htnblog.XmlEntry, error) {
-	entries, err := blog.List()
+	if len(args) <= 0 {
+		entry := blog.Index(0)
+		if entry != nil {
+			return nil, errors.New("no entries")
+		}
+		return entry, nil
+	}
+	if len(args[0]) >= 2 && args[0][0] == '@' {
+		nth, err := strconv.Atoi(args[0][1:])
+		if err == nil {
+			entry := blog.Index(nth)
+			if entry != nil {
+				return entry, nil
+			}
+		}
+	}
+	var result *htnblog.XmlEntry
+
+	err := blog.EachEntry(func(entry1 *htnblog.XmlEntry) bool {
+		id := url2id(entry1.EditUrl())
+		if id != "" && id == args[0] {
+			result = entry1
+			return false
+		}
+		return true
+	})
 	if err != nil {
 		return nil, err
 	}
-	if len(entries) <= 0 {
-		return nil, errors.New("no entries")
+	if result == nil {
+		return nil, fmt.Errorf("%s: entry not found", args[0])
 	}
-	if len(args) <= 0 {
-		return entries[0], nil
-	}
-	if len(args[0]) == 2 && args[0][0] == '@' {
-		nth := int(args[0][1] - '0')
-		if nth >= 0 && nth < len(entries) {
-			return entries[nth], nil
-		}
-	}
-	for _, entry1 := range entries {
-		id := url2id(entry1.EditUrl())
-		if id != "" && id == args[0] {
-			return entry1, nil
-		}
-	}
-	return nil, fmt.Errorf("%s: entry not found", args[0])
+	return result, nil
 }
 
 func editEntry(blog *htnblog.Blog, args []string) error {
