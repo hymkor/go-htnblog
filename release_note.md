@@ -1,7 +1,8 @@
 - `htnblog list` で10個以上のエントリを表示可能とした
     - `-n` で変更可能。デフォルトは `-n 100`
 - `htnblog edit @N` で N を 10以上にできるようにした
-- `(*Blog) Index`, `(*Blog) EachEntry` を実装
+- `htnblog edit (記事のURL)` をサポート
+- `(*Blog) Index`, `(*Blog) EachEntry`, `(*XmlEntry) AlternateUrl` を実装
 
 v0.4.0
 ======
