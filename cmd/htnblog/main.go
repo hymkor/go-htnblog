@@ -43,18 +43,18 @@ var config = sync.OnceValues(func() ([]byte, error) {
 	return bin, nil
 })
 
+var flagMax = flag.Int("n", 100, "fetch articles")
+
 func list(blog *htnblog.Blog) error {
-	entries, err := blog.List()
-	if err != nil {
-		return err
-	}
-	for i, entry1 := range entries {
+	i := 0
+	return blog.EachEntry(func(entry1 *htnblog.XmlEntry) bool {
 		fmt.Printf("@%d %s %s\n",
 			i,
 			url2id(entry1.EditUrl()),
 			entry1.Title)
-	}
-	return nil
+		i++
+		return i < *flagMax
+	})
 }
 
 type jsonEditor struct {
