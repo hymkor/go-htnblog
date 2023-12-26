@@ -33,7 +33,17 @@ var (
 	flagThrid   = flag.Bool("3", false, "Use the value of \"endpointurl3\" in the JSON setting")
 )
 
-var config = sync.OnceValues(func() ([]byte, error) {
+type jsonEditor struct {
+	UserId      string `json:"userid"`
+	EndPointUrl string `json:"endpointurl"`
+	ApiKey      string `json:"apikey"`
+	Editor      string `json:"editor"`
+	Url1        string `json:"endpointurl1"`
+	Url2        string `json:"endpointurl2"`
+	Url3        string `json:"endpointurl3"`
+}
+
+var config = sync.OnceValues(func() (*jsonEditor, error) {
 	var configPath string
 	if *flagRcFile != "" {
 		configPath = *flagRcFile
@@ -48,23 +58,9 @@ var config = sync.OnceValues(func() ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", configPath, err)
 	}
-	return bin, nil
-})
 
-type jsonEditor struct {
-	Editor string `json:"editor"`
-	Url1   string `json:"endpointurl1"`
-	Url2   string `json:"endpointurl2"`
-	Url3   string `json:"endpointurl3"`
-}
-
-var jsonConfig = sync.OnceValues(func() (*jsonEditor, error) {
-	configBin, err := config()
-	if err != nil {
-		return nil, err
-	}
 	var json1 jsonEditor
-	err = json.Unmarshal(configBin, &json1)
+	err = json.Unmarshal(bin, &json1)
 	return &json1, err
 })
 
@@ -81,7 +77,7 @@ func list(blog *htnblog.Blog) error {
 }
 
 func whichEditor() string {
-	json1, err := jsonConfig()
+	json1, err := config()
 	if err == nil && json1.Editor != "" {
 		return json1.Editor
 	}
@@ -319,35 +315,37 @@ func typeEntry(blog *htnblog.Blog, args []string) error {
 var version string
 
 func mains(args []string) error {
-	auth, err := config()
+	json1, err := config()
 	if err != nil {
 		return err
 	}
-	blog, err := htnblog.NewFromJSON(auth)
-	if err != nil {
-		return err
+	endp := json1.EndPointUrl
+	if *flagFirst {
+		if json1.Url1 == "" {
+			return errors.New("-1: field \"endpointurl1\" is not set")
+		}
+		endp = json1.Url1
 	}
-	if json1, err := jsonConfig(); err == nil {
-		if *flagFirst {
-			if json1.Url1 == "" {
-				return errors.New("-1: field \"endpointurl1\" is not set")
-			}
-			blog.EndPointUrl = json1.Url1
+	if *flagSecond {
+		if json1.Url2 == "" {
+			return errors.New("-2: field \"endpointurl2\" is not set")
 		}
-		if *flagSecond {
-			if json1.Url2 == "" {
-				return errors.New("-2: field \"endpointurl2\" is not set")
-			}
-			blog.EndPointUrl = json1.Url2
-		}
-		if *flagThrid {
-			if json1.Url3 == "" {
-				return errors.New("-3: field \"endpointurl3\" is not set")
-			}
-			blog.EndPointUrl = json1.Url3
-		}
+		endp = json1.Url2
 	}
-	blog.DebugPrint = os.Stderr
+	if *flagThrid {
+		if json1.Url3 == "" {
+			return errors.New("-3: field \"endpointurl3\" is not set")
+		}
+		endp = json1.Url3
+	}
+
+	blog := &htnblog.Blog{
+		UserId:      json1.UserId,
+		EndPointUrl: endp,
+		ApiKey:      json1.ApiKey,
+		DebugPrint:  os.Stderr,
+	}
+
 	if len(args) < 1 {
 		fmt.Fprintf(os.Stderr, "%s %s-%s-%s by %s\n",
 			filepath.Base(os.Args[0]),
