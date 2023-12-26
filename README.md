@@ -36,12 +36,16 @@ scoop install htnblog
     "endpointurl":"(END_POINT_URL)",
     "apikey":"(YOUR API KEY)",
     "editor":"(YOUR EDITOR FULLPATH))"
+    "endpointurl1":"(END_POINT_URL at option -1)",
+    "endpointurl2":"(END_POINT_URL at option -2)",
+    "endpointurl3":"(END_POINT_URL at option -3)",
 }
 ```
 
 - **endpointurl** は 「はてな」の「ダッシュボード」 → (ブログ名) → 「設定」 → 詳細設定 → 「AtomPub」セクションのルートネンドポイントの記載の URL になります。
 - **apikey** は「アカウント設定」→「APIキー」に記載されています。
 - **editor** は編集に使うテキストエディターのパスを記載してください。
+- **endpointurl[123]** は **endpointurl** と同じですが、オプション -1,-2,-3 が指定された時にこちらが使われます。
 
 ### 使い方
 
@@ -53,24 +57,32 @@ scoop install htnblog
 - `htnblog edit {URL|@0|@1|…}` … 既存記事の編集
 
 ```./htnblog |
-htnblog v0.5.0-windows-amd64 by go1.21.5
+htnblog v0.5.1-8-g6df087f-windows-amd64 by go1.21.5
 
-Usage: htnblog {list|new|type|edit}
-  htnblog list                ... show recent articles
-  htnblog new                 ... create a new draft
-  htnblog type {URL|@0|@1|..} ... output the article to STDOUT
-  htnblog edit {URL|@0|@1|..} ... edit the article
+Usage: htnblog {options...} {list|new|type|edit}
+  htnblog list                  ... show recent articles
+  htnblog new                   ... create a new draft
+  htnblog type   {URL|@0|@1|..} ... output the article to STDOUT
+  htnblog edit   {URL|@0|@1|..} ... edit the article
+  htnblog delete {URL|@0|@1|..} ... output the article to STDOUT and delete it
     The lines in the draft up to "---" are the header lines,
     and the rest is the article body.
 
 Please write your setting on ~/.htnblog as below:
     {
         "userid":"(YOUR_USER_ID)",
-        "endpointurl":"(END_POINT_URL)",
+        "endpointurl":"(END_POINT_URL used by default)",
         "apikey":"(YOUR API KEY)",
         "editor":"(YOUR EDITOR.THIS IS for cmd/htnblog/main.go)"
+        "endpointurl1":"(END_POINT_URL used by option -1)",
+        "endpointurl2":"(END_POINT_URL used by option -2)",
+        "endpointurl3":"(END_POINT_URL used by option -3)",
     }
 
+  -1	Use the value of "endpointurl1" in the JSON setting
+  -2	Use the value of "endpointurl2" in the JSON setting
+  -3	Use the value of "endpointurl3" in the JSON setting
+  -f	Delete without prompt
   -n int
     	fetch articles (default 100)
   -rc string
