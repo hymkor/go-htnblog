@@ -88,12 +88,26 @@ func whichEditor() string {
 	return editor
 }
 
+func askYesNo() bool {
+	if closer, err := keyin.Raw(); err == nil {
+		defer closer()
+	} else {
+		return false
+	}
+	io.WriteString(os.Stdout, "\nAre you sure (Yes/[No]): ")
+	key, err := keyin.Get()
+	if err != nil {
+		return false
+	}
+	return key == "y" || key == "Y"
+}
+
 func askYesNoEdit() (rune, error) {
 	if closer, err := keyin.Raw(); err == nil {
 		defer closer()
 	}
 	for {
-		io.WriteString(os.Stdout, "Are you sure to post ? (Yes/No/Edit): ")
+		io.WriteString(os.Stdout, "Are you sure to post ? ([Yes]/No/Edit): ")
 		key, err := keyin.Get()
 		if err != nil {
 			return 0, err
@@ -318,7 +332,13 @@ func deleteEntry(blog *htnblog.Blog, args []string) error {
 		return err
 	}
 	os.Stdout.Write(entryToDraft(entry))
-	return blog.Delete(entry.EditUrl())
+	if askYesNo() {
+		fmt.Println("\n-> Deleted")
+		return blog.Delete(entry.EditUrl())
+	} else {
+		fmt.Println("\n-> Canceled")
+		return nil
+	}
 }
 
 var version string
