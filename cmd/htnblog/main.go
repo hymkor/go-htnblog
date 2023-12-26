@@ -242,7 +242,7 @@ func url2id(url string) string {
 func chooseEntry(blog *htnblog.Blog, args []string) (*htnblog.XmlEntry, error) {
 	if len(args) <= 0 {
 		entry := blog.Index(0)
-		if entry != nil {
+		if entry == nil {
 			return nil, errors.New("no entries")
 		}
 		return entry, nil
