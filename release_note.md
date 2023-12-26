@@ -1,3 +1,8 @@
+- htnblog.exe: `-1`,`-2`,`-3` で別のルートエンドポイントURLを使えるようにした。
+  (それぞれ設定ファイルの `"endpointurl1"`, `"endpointurl2"`, `"endpointurl3"` を参照)
+- htnblog.exe: 記事を削除する `htnblog delete` サブコマンドと`-f`オプションを追加
+- メソッド: `(*Blog) Delete` を実装
+
 v0.5.1
 ======
 (2023.12.26)
