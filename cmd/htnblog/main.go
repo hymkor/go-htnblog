@@ -24,7 +24,11 @@ import (
 	"github.com/hymkor/go-htnblog"
 )
 
-var flagRcFile = flag.String("rc", "", "use the specified file instead of ~/.htnblog")
+var (
+	flagRcFile  = flag.String("rc", "", "use the specified file instead of ~/.htnblog")
+	flagMax     = flag.Int("n", 100, "fetch articles")
+	flagUpdated = flag.String("updated", "", "(experimental) set the updated date like 2006-01-02T15:04:05-07:00")
+)
 
 var config = sync.OnceValues(func() ([]byte, error) {
 	var configPath string
@@ -43,8 +47,6 @@ var config = sync.OnceValues(func() ([]byte, error) {
 	}
 	return bin, nil
 })
-
-var flagMax = flag.Int("n", 100, "fetch articles")
 
 func list(blog *htnblog.Blog) error {
 	i := 0
@@ -208,10 +210,7 @@ func draftToEntry(draft []byte, entry *htnblog.XmlEntry) error {
 	return nil
 }
 
-var (
-	rxDateTime  = regexp.MustCompile(`^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\+\d\d:\d\d$`)
-	flagUpdated = flag.String("updated", "", "(experimental) set the updated date like 2006-01-02T15:04:05-07:00")
-)
+var rxDateTime = regexp.MustCompile(`^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\+\d\d:\d\d$`)
 
 func editEntry1(blog *htnblog.Blog, entry *htnblog.XmlEntry) error {
 	if *flagUpdated != "" {
