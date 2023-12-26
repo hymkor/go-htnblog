@@ -22,9 +22,12 @@ func NewFromJSON(json1 []byte) (*Blog, error) {
 	return blog, err
 }
 
-func drop(r io.ReadCloser) {
-	io.Copy(io.Discard, r)
-	r.Close()
+func drop(r io.ReadCloser) error {
+	if _, err := io.Copy(io.Discard, r); err != nil {
+		r.Close()
+		return err
+	}
+	return r.Close()
 }
 
 func (B *Blog) request(method, endPointUrl string, r io.Reader) (io.ReadCloser, error) {

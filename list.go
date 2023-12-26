@@ -113,3 +113,11 @@ func (B *Blog) Dump(w io.Writer) error {
 	_, err = io.Copy(w, body)
 	return err
 }
+
+func (B *Blog) Delete(editUrl string) error {
+	body, err := B.request(http.MethodDelete, editUrl, nil)
+	if err != nil {
+		return err
+	}
+	return drop(body)
+}
