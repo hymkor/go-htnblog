@@ -312,6 +312,15 @@ func typeEntry(blog *htnblog.Blog, args []string) error {
 	return nil
 }
 
+func deleteEntry(blog *htnblog.Blog, args []string) error {
+	entry, err := chooseEntry(blog, args)
+	if err != nil {
+		return err
+	}
+	os.Stdout.Write(entryToDraft(entry))
+	return blog.Delete(entry.EditUrl())
+}
+
 var version string
 
 func mains(args []string) error {
@@ -353,10 +362,11 @@ func mains(args []string) error {
 
 		io.WriteString(os.Stderr, `
 Usage: htnblog {options...} {list|new|type|edit}
-  htnblog list                ... show recent articles
-  htnblog new                 ... create a new draft
-  htnblog type {URL|@0|@1|..} ... output the article to STDOUT
-  htnblog edit {URL|@0|@1|..} ... edit the article
+  htnblog list                  ... show recent articles
+  htnblog new                   ... create a new draft
+  htnblog type   {URL|@0|@1|..} ... output the article to STDOUT
+  htnblog edit   {URL|@0|@1|..} ... edit the article
+  htnblog delete {URL|@0|@1|..} ... output the article to STDOUT and delete it
     The lines in the draft up to "---" are the header lines,
     and the rest is the article body.
 
@@ -384,6 +394,8 @@ Please write your setting on ~/.htnblog as below:
 		return editEntry(blog, args[1:])
 	case "type":
 		return typeEntry(blog, args[1:])
+	case "delete":
+		return deleteEntry(blog, args[1:])
 	default:
 		return fmt.Errorf("%s: no such subcommand", args[0])
 	}
