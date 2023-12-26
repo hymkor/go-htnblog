@@ -28,6 +28,9 @@ var (
 	flagRcFile  = flag.String("rc", "", "use the specified file instead of ~/.htnblog")
 	flagMax     = flag.Int("n", 100, "fetch articles")
 	flagUpdated = flag.String("updated", "", "(experimental) set the updated date like 2006-01-02T15:04:05-07:00")
+	flagFirst   = flag.Bool("1", false, "Use the value of \"endpointurl1\" in the JSON setting")
+	flagSecond  = flag.Bool("2", false, "Use the value of \"endpointurl2\" in the JSON setting")
+	flagThrid   = flag.Bool("3", false, "Use the value of \"endpointurl3\" in the JSON setting")
 )
 
 var config = sync.OnceValues(func() ([]byte, error) {
@@ -48,6 +51,23 @@ var config = sync.OnceValues(func() ([]byte, error) {
 	return bin, nil
 })
 
+type jsonEditor struct {
+	Editor string `json:"editor"`
+	Url1   string `json:"endpointurl1"`
+	Url2   string `json:"endpointurl2"`
+	Url3   string `json:"endpointurl3"`
+}
+
+var jsonConfig = sync.OnceValues(func() (*jsonEditor, error) {
+	configBin, err := config()
+	if err != nil {
+		return nil, err
+	}
+	var json1 jsonEditor
+	err = json.Unmarshal(configBin, &json1)
+	return &json1, err
+})
+
 func list(blog *htnblog.Blog) error {
 	i := 0
 	return blog.EachEntry(func(entry1 *htnblog.XmlEntry) bool {
@@ -60,18 +80,10 @@ func list(blog *htnblog.Blog) error {
 	})
 }
 
-type jsonEditor struct {
-	Editor string `json:"editor"`
-}
-
 func whichEditor() string {
-	configBin, err := config()
-	if err == nil {
-		var json1 jsonEditor
-		err = json.Unmarshal(configBin, &json1)
-		if err == nil && json1.Editor != "" {
-			return json1.Editor
-		}
+	json1, err := jsonConfig()
+	if err == nil && json1.Editor != "" {
+		return json1.Editor
 	}
 	editor, ok := os.LookupEnv("EDITOR")
 	if !ok {
@@ -315,6 +327,26 @@ func mains(args []string) error {
 	if err != nil {
 		return err
 	}
+	if json1, err := jsonConfig(); err == nil {
+		if *flagFirst {
+			if json1.Url1 == "" {
+				return errors.New("-1: field \"endpointurl1\" is not set")
+			}
+			blog.EndPointUrl = json1.Url1
+		}
+		if *flagSecond {
+			if json1.Url2 == "" {
+				return errors.New("-2: field \"endpointurl2\" is not set")
+			}
+			blog.EndPointUrl = json1.Url2
+		}
+		if *flagThrid {
+			if json1.Url3 == "" {
+				return errors.New("-3: field \"endpointurl3\" is not set")
+			}
+			blog.EndPointUrl = json1.Url3
+		}
+	}
 	blog.DebugPrint = os.Stderr
 	if len(args) < 1 {
 		fmt.Fprintf(os.Stderr, "%s %s-%s-%s by %s\n",
@@ -322,7 +354,7 @@ func mains(args []string) error {
 			version, runtime.GOOS, runtime.GOARCH, runtime.Version())
 
 		io.WriteString(os.Stderr, `
-Usage: htnblog {list|new|type|edit}
+Usage: htnblog {options...} {list|new|type|edit}
   htnblog list                ... show recent articles
   htnblog new                 ... create a new draft
   htnblog type {URL|@0|@1|..} ... output the article to STDOUT
@@ -333,9 +365,12 @@ Usage: htnblog {list|new|type|edit}
 Please write your setting on ~/.htnblog as below:
     {
         "userid":"(YOUR_USER_ID)",
-        "endpointurl":"(END_POINT_URL)",
+        "endpointurl":"(END_POINT_URL used by default)",
         "apikey":"(YOUR API KEY)",
         "editor":"(YOUR EDITOR.THIS IS for cmd/htnblog/main.go)"
+        "endpointurl1":"(END_POINT_URL used by option -1)",
+        "endpointurl2":"(END_POINT_URL used by option -2)",
+        "endpointurl3":"(END_POINT_URL used by option -3)",
     }
 
 `)
