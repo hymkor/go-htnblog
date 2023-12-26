@@ -31,6 +31,7 @@ var (
 	flagFirst   = flag.Bool("1", false, "Use the value of \"endpointurl1\" in the JSON setting")
 	flagSecond  = flag.Bool("2", false, "Use the value of \"endpointurl2\" in the JSON setting")
 	flagThrid   = flag.Bool("3", false, "Use the value of \"endpointurl3\" in the JSON setting")
+	flagForce   = flag.Bool("f", false, "Delete without prompt")
 )
 
 type jsonEditor struct {
@@ -89,6 +90,9 @@ func whichEditor() string {
 }
 
 func askYesNo() bool {
+	if *flagForce {
+		return true
+	}
 	if closer, err := keyin.Raw(); err == nil {
 		defer closer()
 	} else {
