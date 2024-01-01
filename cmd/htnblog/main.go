@@ -219,9 +219,15 @@ func splitHeaderAndBody(r io.Reader) (map[string][]string, []byte, error) {
 
 func entryToDraft(entry *htnblog.XmlEntry) []byte {
 	var buffer bytes.Buffer
-	fmt.Fprintf(&buffer, "Title: %s\n", entry.Title)
-	// fmt.Fprintf(&buffer, "Draft: %s\n", entry.Control.Draft)
-	fmt.Fprintf(&buffer, "---\n%s", entry.Content.Body)
+	fmt.Fprintln(&buffer, "Rem: Alternate-Url:", entry.AlternateUrl())
+	fmt.Fprintln(&buffer, "Rem: App-Edited:", entry.AppEdited)
+	fmt.Fprintln(&buffer, "Rem: Draft:", entry.Control.Draft)
+	fmt.Fprintln(&buffer, "Rem: Edit-Url:", entry.EditUrl())
+	fmt.Fprintln(&buffer, "Rem: Published:", entry.Published)
+	fmt.Fprintln(&buffer, "Rem: Updated:", entry.Updated)
+	fmt.Fprintln(&buffer, "Title:", entry.Title)
+	fmt.Fprintln(&buffer, "---")
+	fmt.Fprint(&buffer, entry.Content.Body)
 	return buffer.Bytes()
 }
 
