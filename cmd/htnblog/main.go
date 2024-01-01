@@ -176,7 +176,7 @@ func newEntry(blog *htnblog.Blog) error {
 	if err != nil {
 		return err
 	}
-	title := strings.Join(header["title"], " ")
+	title := header["title"]
 	return htnblog.Dump(blog.Post(title, strings.TrimSpace(string(body))))
 }
 
@@ -197,9 +197,9 @@ func chomp(text string) string {
 	return text
 }
 
-func splitHeaderAndBody(r io.Reader) (map[string][]string, []byte, error) {
+func splitHeaderAndBody(r io.Reader) (map[string]string, []byte, error) {
 	br := bufio.NewReader(r)
-	header := map[string][]string{}
+	header := map[string]string{}
 	for {
 		text, err := br.ReadString('\n')
 		if err != nil {
@@ -211,7 +211,12 @@ func splitHeaderAndBody(r io.Reader) (map[string][]string, []byte, error) {
 		}
 		name, value, _ := strings.Cut(text, ":")
 		name = strings.ToLower(name)
-		header[name] = append(header[name], strings.TrimSpace(value))
+		value = strings.TrimSpace(value)
+		if old, ok := header[name]; ok {
+			header[name] = old + " " + value
+		} else {
+			header[name] = value
+		}
 	}
 	body, err := io.ReadAll(br)
 	return header, body, ignoreEof(err)
@@ -236,7 +241,7 @@ func draftToEntry(draft []byte, entry *htnblog.XmlEntry) error {
 	if err != nil {
 		return err
 	}
-	entry.Title = strings.Join(header["title"], " ")
+	entry.Title = header["title"]
 	// entry.Control.Draft = strings.Join(header["draft"], " ")
 	entry.Content.Body = string(body)
 	return nil
