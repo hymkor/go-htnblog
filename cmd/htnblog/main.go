@@ -257,12 +257,23 @@ func editEntry1(blog *htnblog.Blog, entry *htnblog.XmlEntry) error {
 		entry.Updated = *flagUpdated
 		println(*flagUpdated)
 	}
-	draft, err := callEditor(entryToDraft(entry))
-	if err != nil {
-		return err
-	}
-	if err := draftToEntry(draft, entry); err != nil {
-		return err
+	draft := entryToDraft(entry)
+	for {
+		var err error
+		draft, err = callEditor(draft)
+		if err != nil {
+			return err
+		}
+		err = draftToEntry(draft, entry)
+		if err == nil {
+			break
+		}
+		var buffer bytes.Buffer
+		buffer.WriteString("Rem: Err: ")
+		buffer.WriteString(err.Error())
+		buffer.WriteByte('\n')
+		buffer.Write(draft)
+		draft = buffer.Bytes()
 	}
 	return htnblog.Dump(blog.Update(entry))
 }
