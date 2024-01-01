@@ -13,7 +13,7 @@ type XmlEntry struct {
 	Link      []XmlLink  `xml:"link"`
 	Updated   string     `xml:"updated,omitempty"`
 	Published string     `xml:"published,omitempty"`
-	AppEdited string     `xml:"app:edited,omitempty"`
+	AppEdited string     `xml:"http://www.w3.org/2007/app edited,omitempty"`
 	Control   XmlControl `xml:"http://www.w3.org/2007/app control"`
 }
 
