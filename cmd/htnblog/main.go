@@ -133,7 +133,7 @@ func askYesNoEdit() (rune, error) {
 func callEditor(draft []byte) ([]byte, error) {
 	editor := whichEditor()
 	if editor == "" {
-		return nil, errors.New(`Editor not found. Please set $EDITOR or { "editor":"(YOUR-EDITOR)}" on ~/.htnblog`)
+		return nil, errors.New(`editor not found. Please set $EDITOR or { "editor":"(YOUR-EDITOR)}" on ~/.htnblog`)
 	}
 	tempPath := filepath.Join(os.TempDir(), fmt.Sprintf("htnblog-%d.md", os.Getpid()))
 	os.WriteFile(tempPath, draft, 0600)
@@ -170,7 +170,7 @@ func newEntry(blog *htnblog.Blog) error {
 		return err
 	}
 	if len(bytes.TrimSpace(draft)) == 0 {
-		return errors.New("Your draft is empty. Posting is canceled.")
+		return errors.New("your draft is empty. Posting is canceled")
 	}
 	header, body := splitHeaderAndBody(draft)
 	title := header["title"]
@@ -228,7 +228,7 @@ func draftToEntry(draft []byte, entry *htnblog.XmlEntry) error {
 
 	if val, ok := header["updated"]; ok && val != "" {
 		if _, err := time.Parse(time.RFC3339, val); err != nil {
-			return fmt.Errorf("Updated: %s: %w", val, err)
+			return fmt.Errorf("updated: %s: %w", val, err)
 		}
 	}
 
