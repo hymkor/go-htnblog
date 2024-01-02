@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/json"
 	"errors"
@@ -173,22 +172,12 @@ func newEntry(blog *htnblog.Blog) error {
 	if len(bytes.TrimSpace(draft)) == 0 {
 		return errors.New("Your draft is empty. Posting is canceled.")
 	}
-	header, body, err := splitHeaderAndBody(bytes.NewReader(draft))
-	if err != nil {
-		return err
-	}
+	header, body := splitHeaderAndBody(draft)
 	title := header["title"]
 	return htnblog.Dump(blog.Post(title, strings.TrimSpace(string(body))))
 }
 
-func ignoreEof(err error) error {
-	if err == io.EOF {
-		return nil
-	}
-	return err
-}
-
-func chomp(text string) string {
+func chomp(text []byte) []byte {
 	if len(text) > 0 && text[len(text)-1] == '\n' {
 		text = text[:len(text)-1]
 	}
@@ -198,19 +187,17 @@ func chomp(text string) string {
 	return text
 }
 
-func splitHeaderAndBody(r io.Reader) (map[string]string, []byte, error) {
-	br := bufio.NewReader(r)
+func splitHeaderAndBody(source []byte) (map[string]string, []byte) {
 	header := map[string]string{}
-	for {
-		text, err := br.ReadString('\n')
-		if err != nil {
-			return header, []byte{}, ignoreEof(err)
-		}
-		text = chomp(text)
-		if strings.HasPrefix(text, "---") {
+	for len(source) > 0 {
+		var line []byte
+
+		line, source, _ = bytes.Cut(source, []byte{'\n'})
+		line = chomp(line)
+		if bytes.HasPrefix(line, []byte{'-', '-', '-'}) {
 			break
 		}
-		name, value, _ := strings.Cut(text, ":")
+		name, value, _ := strings.Cut(string(line), ":")
 		name = strings.ToLower(name)
 		value = strings.TrimSpace(value)
 		if old, ok := header[name]; ok {
@@ -219,8 +206,7 @@ func splitHeaderAndBody(r io.Reader) (map[string]string, []byte, error) {
 			header[name] = value
 		}
 	}
-	body, err := io.ReadAll(br)
-	return header, body, ignoreEof(err)
+	return header, source
 }
 
 func entryToDraft(entry *htnblog.XmlEntry) []byte {
@@ -238,10 +224,7 @@ func entryToDraft(entry *htnblog.XmlEntry) []byte {
 }
 
 func draftToEntry(draft []byte, entry *htnblog.XmlEntry) error {
-	header, body, err := splitHeaderAndBody(bytes.NewReader(draft))
-	if err != nil {
-		return err
-	}
+	header, body := splitHeaderAndBody(draft)
 
 	if val, ok := header["updated"]; ok && val != "" {
 		if _, err := time.Parse(time.RFC3339, val); err != nil {
