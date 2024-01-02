@@ -16,6 +16,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/hymkor/go-windows1x-virtualterminal"
 	"github.com/hymkor/go-windows1x-virtualterminal/keyin"
@@ -229,7 +230,7 @@ func entryToDraft(entry *htnblog.XmlEntry) []byte {
 	fmt.Fprintln(&buffer, "Rem: Draft:", entry.Control.Draft)
 	fmt.Fprintln(&buffer, "Rem: Edit-Url:", entry.EditUrl())
 	fmt.Fprintln(&buffer, "Rem: Published:", entry.Published)
-	fmt.Fprintln(&buffer, "Rem: Updated:", entry.Updated)
+	fmt.Fprintln(&buffer, "Updated:", entry.Updated)
 	fmt.Fprintln(&buffer, "Title:", entry.Title)
 	fmt.Fprintln(&buffer, "---")
 	fmt.Fprint(&buffer, entry.Content.Body)
@@ -241,8 +242,16 @@ func draftToEntry(draft []byte, entry *htnblog.XmlEntry) error {
 	if err != nil {
 		return err
 	}
+
+	if val, ok := header["updated"]; ok && val != "" {
+		if _, err := time.Parse(time.RFC3339, val); err != nil {
+			return fmt.Errorf("Updated: %s: %w", val, err)
+		}
+	}
+
 	entry.Title = header["title"]
-	// entry.Control.Draft = strings.Join(header["draft"], " ")
+	entry.Updated = header["updated"]
+
 	entry.Content.Body = string(body)
 	return nil
 }
