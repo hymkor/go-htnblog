@@ -62,7 +62,7 @@ func TestFeed(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	nextUrl := feed.NextUrl()
+	nextUrl := feed.nextUrl()
 	expect := "https://blog.hatena.ne.jp/{はてなID}/{ブログID}/atom/entry?page=1377584217"
 	if nextUrl != expect {
 		t.Fatalf("expect '%s' but '%s'", expect, nextUrl)
