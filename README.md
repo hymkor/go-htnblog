@@ -1,12 +1,20 @@
-go-htnblog：はてなブログ投稿用Go言語パッケージ
-==============================================
+go-htnblog：はてなブログ-クライアント
+====================================
 
 [![GoDev](https://pkg.go.dev/badge/github.com/hymkor/go-htnblog)](https://pkg.go.dev/github.com/hymkor/go-htnblog)
 
-まだ BASIC 認証でごめん
+本パッケージは
 
-サンプル投稿ツール (htnblog)
-----------------------------
+- コマンドラインクライアント(htnblog.exe, htnblog)  
+    → シェル、コマンドプロンプトなどから利用。vim など任意のテキストエディターで記事を編集して、投稿
+- クライアントライブラリ(github.com/hymkor/go-htnblog)  
+    → Go言語で投稿機能を利用できるライブラリ
+
+からなります。Windows, Linux (Ubuntu on WSL) で動作を確認しています
+
+
+コマンドラインクライアント
+--------------------------
 
 ### インストール
 
@@ -36,9 +44,9 @@ scoop install htnblog
     "endpointurl":"(END_POINT_URL)",
     "apikey":"(YOUR API KEY)",
     "editor":"(YOUR EDITOR FULLPATH))"
-    "endpointurl1":"(END_POINT_URL at option -1)",
-    "endpointurl2":"(END_POINT_URL at option -2)",
-    "endpointurl3":"(END_POINT_URL at option -3)",
+    "endpointurl1":"(END_POINT_URL at option `-1`)",
+    "endpointurl2":"(END_POINT_URL at option `-2`)",
+    "endpointurl3":"(END_POINT_URL at option `-3`)",
 }
 ```
 
