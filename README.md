@@ -2,6 +2,7 @@ go-htnblog：はてなブログ-クライアント
 ====================================
 
 [![GoDev](https://pkg.go.dev/badge/github.com/hymkor/go-htnblog)](https://pkg.go.dev/github.com/hymkor/go-htnblog)
+[![Github latest Releases](https://img.shields.io/github/downloads/hymkor/go-htnblog/latest/total.svg)](https://github.com/hymkor/go-htnblog/releases/latest)
 
 本パッケージは
 
