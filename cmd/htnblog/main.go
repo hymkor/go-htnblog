@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -16,6 +17,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/nyaosorg/go-readline-ny"
 
 	"github.com/hymkor/go-windows1x-virtualterminal"
 	"github.com/hymkor/go-windows1x-virtualterminal/keyin"
@@ -44,16 +47,21 @@ type jsonEditor struct {
 	Url3        string `json:"endpointurl3"`
 }
 
-var config = sync.OnceValues(func() (*jsonEditor, error) {
-	var configPath string
+var getConfigPath = sync.OnceValues(func() (string, error) {
 	if *flagRcFile != "" {
-		configPath = *flagRcFile
-	} else {
-		home, err := os.UserHomeDir()
-		if err != nil {
-			return nil, err
-		}
-		configPath = filepath.Join(home, ".htnblog")
+		return *flagRcFile, nil
+	}
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(home, ".htnblog"), nil
+})
+
+var config = sync.OnceValues(func() (*jsonEditor, error) {
+	configPath, err := getConfigPath()
+	if err != nil {
+		return nil, err
 	}
 	bin, err := os.ReadFile(configPath)
 	if err != nil {
@@ -64,6 +72,77 @@ var config = sync.OnceValues(func() (*jsonEditor, error) {
 	err = json.Unmarshal(bin, &json1)
 	return &json1, err
 })
+
+func ask(prompt, defaults string) (string, error) {
+	editor := &readline.Editor{
+		PromptWriter: func(w io.Writer) (int, error) {
+			return io.WriteString(w, prompt)
+		},
+		Default: defaults,
+	}
+	answer, err := editor.ReadLine(context.Background())
+	answer = strings.TrimSpace(answer)
+	return answer, err
+}
+
+func nonZeroValue(a, b string) string {
+	if a == "" {
+		return b
+	}
+	return a
+}
+
+func initConfig() (*jsonEditor, error) {
+	json1, err := config()
+	if err != nil {
+		json1 = &jsonEditor{}
+	}
+	json1.UserId, err = ask("Hatena-id ? ", json1.UserId)
+	if err != nil {
+		return nil, err
+	}
+	json1.ApiKey, err = ask("API-KEY ? ", json1.ApiKey)
+	if err != nil {
+		return nil, err
+	}
+	json1.Url1, err = ask("End Point URL 1 ? ", json1.Url1)
+	if err != nil {
+		return nil, err
+	}
+	json1.Url2, err = ask("End Point URL 2 ? ", json1.Url2)
+	if err != nil {
+		return nil, err
+	}
+	json1.Url3, err = ask("End Point URL 3 ? ", json1.Url3)
+	if err != nil {
+		return nil, err
+	}
+	json1.EndPointUrl, err = ask("End Point URL (default) ? ",
+		nonZeroValue(json1.EndPointUrl, json1.Url1))
+	if err != nil {
+		return nil, err
+	}
+	json1.Editor, err = ask("Text Editor Path ? ",
+		nonZeroValue(json1.Editor, os.Getenv("EDITOR")))
+	if err != nil {
+		return nil, err
+	}
+
+	bin, err := json.MarshalIndent(json1, "", "\t")
+	if err != nil {
+		return nil, err
+	}
+	configPath, err := getConfigPath()
+	if err != nil {
+		return nil, err
+	}
+	err = os.WriteFile(configPath, bin, 0644)
+	if err != nil {
+		return nil, err
+	}
+	_, err = fmt.Println("Saved configuration to", configPath)
+	return json1, err
+}
 
 func list(blog *htnblog.Blog) error {
 	i := 0
@@ -362,6 +441,32 @@ func deleteEntry(blog *htnblog.Blog, args []string) error {
 var version string
 
 func mains(args []string) error {
+	if len(args) < 1 {
+		fmt.Fprintf(os.Stderr, "%s %s-%s-%s by %s\n",
+			filepath.Base(os.Args[0]),
+			version, runtime.GOOS, runtime.GOARCH, runtime.Version())
+
+		io.WriteString(os.Stderr, `
+Usage: htnblog {options...} {init|list|new|type|edit}
+  htnblog init                  ... edit configuration
+  htnblog list                  ... show recent articles
+  htnblog new                   ... create a new draft
+  htnblog type   {URL|@0|@1|..} ... output the article to STDOUT
+  htnblog edit   {URL|@0|@1|..} ... edit the article
+  htnblog delete {URL|@0|@1|..} ... output the article to STDOUT and delete it
+    The lines in the draft up to "---" are the header lines,
+    and the rest is the article body.
+
+`)
+		flag.PrintDefaults()
+		return nil
+	}
+
+	if args[0] == "init" {
+		_, err := initConfig()
+		return err
+	}
+
 	json1, err := config()
 	if err != nil {
 		return err
@@ -393,36 +498,6 @@ func mains(args []string) error {
 		DebugPrint:  os.Stderr,
 	}
 
-	if len(args) < 1 {
-		fmt.Fprintf(os.Stderr, "%s %s-%s-%s by %s\n",
-			filepath.Base(os.Args[0]),
-			version, runtime.GOOS, runtime.GOARCH, runtime.Version())
-
-		io.WriteString(os.Stderr, `
-Usage: htnblog {options...} {list|new|type|edit}
-  htnblog list                  ... show recent articles
-  htnblog new                   ... create a new draft
-  htnblog type   {URL|@0|@1|..} ... output the article to STDOUT
-  htnblog edit   {URL|@0|@1|..} ... edit the article
-  htnblog delete {URL|@0|@1|..} ... output the article to STDOUT and delete it
-    The lines in the draft up to "---" are the header lines,
-    and the rest is the article body.
-
-Please write your setting on ~/.htnblog as below:
-    {
-        "userid":"(YOUR_USER_ID)",
-        "endpointurl":"(END_POINT_URL used by default)",
-        "apikey":"(YOUR API KEY)",
-        "editor":"(YOUR EDITOR.THIS IS for cmd/htnblog/main.go)"
-        "endpointurl1":"(END_POINT_URL used by option -1)",
-        "endpointurl2":"(END_POINT_URL used by option -2)",
-        "endpointurl3":"(END_POINT_URL used by option -3)",
-    }
-
-`)
-		flag.PrintDefaults()
-		return nil
-	}
 	switch args[0] {
 	case "list":
 		return list(blog)
@@ -441,6 +516,9 @@ Please write your setting on ~/.htnblog as below:
 
 func main() {
 	if closer, err := virtualterminal.EnableStdin(); err == nil {
+		defer closer()
+	}
+	if closer, err := virtualterminal.EnableStdout(); err == nil {
 		defer closer()
 	}
 
