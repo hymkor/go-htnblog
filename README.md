@@ -35,9 +35,23 @@ scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
 scoop install htnblog
 ```
 
-### 設定ファイル用意
+### 設定
 
-~/.htnblog というファイルに次のように記載してください
+`htnblog init` を実行してください。
+
+```
+$ htnblog init
+Hatena-id ? (← Hatena-IDを入力)
+API-KEY ? (← APIキー入力)
+End Point URL 1 ? (← 一つ目のブログのEndPointURL を入力)
+End Point URL 2 ? (← 二つ目のブログのEndPointURL を入力:Enterのみで省略可)
+End Point URL 3 ? (← 三つめのブログのEndPointURL を入力:Enterのみで省略可)
+End Point URL (default) ? (← デフォルトのブログの EndPointURL: 既定値は1と同じ)
+Text Editor Path ? (← テキストエディタのパス: 既定値は%EDITOR%)
+Saved configuration to C:\Users\hymkor\.htnblog
+```
+
+設定は ~/.htnblog というファイルに次のように保存されます。
 
 ```
 {
@@ -64,11 +78,13 @@ scoop install htnblog
 - `htnblog list` … 直近10件の記事のリスト
 - `htnblog new` … 新規記事のドラフトを作成
 - `htnblog edit {URL|@0|@1|…}` … 既存記事の編集
+- `htnblog init` … 設定の編集
 
 ```./htnblog |
-htnblog v0.5.1-8-g6df087f-windows-amd64 by go1.21.5
+htnblog v0.6.0-14-gb6cfc82-windows-amd64 by go1.21.5
 
-Usage: htnblog {options...} {list|new|type|edit}
+Usage: htnblog {options...} {init|list|new|type|edit}
+  htnblog init                  ... edit configuration
   htnblog list                  ... show recent articles
   htnblog new                   ... create a new draft
   htnblog type   {URL|@0|@1|..} ... output the article to STDOUT
@@ -76,17 +92,6 @@ Usage: htnblog {options...} {list|new|type|edit}
   htnblog delete {URL|@0|@1|..} ... output the article to STDOUT and delete it
     The lines in the draft up to "---" are the header lines,
     and the rest is the article body.
-
-Please write your setting on ~/.htnblog as below:
-    {
-        "userid":"(YOUR_USER_ID)",
-        "endpointurl":"(END_POINT_URL used by default)",
-        "apikey":"(YOUR API KEY)",
-        "editor":"(YOUR EDITOR.THIS IS for cmd/htnblog/main.go)"
-        "endpointurl1":"(END_POINT_URL used by option -1)",
-        "endpointurl2":"(END_POINT_URL used by option -2)",
-        "endpointurl3":"(END_POINT_URL used by option -3)",
-    }
 
   -1	Use the value of "endpointurl1" in the JSON setting
   -2	Use the value of "endpointurl2" in the JSON setting
