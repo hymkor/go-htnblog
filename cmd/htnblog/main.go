@@ -28,13 +28,12 @@ import (
 )
 
 var (
-	flagRcFile  = flag.String("rc", "", "use the specified file instead of ~/.htnblog")
-	flagMax     = flag.Int("n", 100, "fetch articles")
-	flagUpdated = flag.String("updated", "", "(experimental) set the updated date like 2006-01-02T15:04:05-07:00")
-	flagFirst   = flag.Bool("1", false, "Use the value of \"endpointurl1\" in the JSON setting")
-	flagSecond  = flag.Bool("2", false, "Use the value of \"endpointurl2\" in the JSON setting")
-	flagThrid   = flag.Bool("3", false, "Use the value of \"endpointurl3\" in the JSON setting")
-	flagForce   = flag.Bool("f", false, "Delete without prompt")
+	flagRcFile = flag.String("rc", "", "use the specified file instead of ~/.htnblog")
+	flagMax    = flag.Int("n", 100, "fetch articles")
+	flagFirst  = flag.Bool("1", false, "Use the value of \"endpointurl1\" in the JSON setting")
+	flagSecond = flag.Bool("2", false, "Use the value of \"endpointurl2\" in the JSON setting")
+	flagThrid  = flag.Bool("3", false, "Use the value of \"endpointurl3\" in the JSON setting")
+	flagForce  = flag.Bool("f", false, "Delete without prompt")
 )
 
 type jsonEditor struct {
@@ -321,13 +320,6 @@ func draftToEntry(draft []byte, entry *htnblog.XmlEntry) error {
 var rxDateTime = regexp.MustCompile(`^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\+\d\d:\d\d$`)
 
 func editEntry1(blog *htnblog.Blog, entry *htnblog.XmlEntry) error {
-	if *flagUpdated != "" {
-		if !rxDateTime.MatchString(*flagUpdated) {
-			return fmt.Errorf("%s: invalid date/time format", *flagUpdated)
-		}
-		entry.Updated = *flagUpdated
-		println(*flagUpdated)
-	}
 	draft := entryToDraft(entry)
 	for {
 		var err error
