@@ -36,7 +36,7 @@ var (
 	flagForce  = flag.Bool("f", false, "Delete without prompt")
 )
 
-type jsonEditor struct {
+type configuration struct {
 	UserId      string `json:"userid"`
 	EndPointUrl string `json:"endpointurl"`
 	ApiKey      string `json:"apikey"`
@@ -57,7 +57,7 @@ var getConfigPath = sync.OnceValues(func() (string, error) {
 	return filepath.Join(home, ".htnblog"), nil
 })
 
-var config = sync.OnceValues(func() (*jsonEditor, error) {
+var config = sync.OnceValues(func() (*configuration, error) {
 	configPath, err := getConfigPath()
 	if err != nil {
 		return nil, err
@@ -67,7 +67,7 @@ var config = sync.OnceValues(func() (*jsonEditor, error) {
 		return nil, fmt.Errorf("%s: %w", configPath, err)
 	}
 
-	var json1 jsonEditor
+	var json1 configuration
 	err = json.Unmarshal(bin, &json1)
 	return &json1, err
 })
@@ -91,10 +91,10 @@ func nonZeroValue(a, b string) string {
 	return a
 }
 
-func initConfig() (*jsonEditor, error) {
+func initConfig() (*configuration, error) {
 	json1, err := config()
 	if err != nil {
-		json1 = &jsonEditor{}
+		json1 = &configuration{}
 	}
 	json1.UserId, err = ask("Hatena-id ? ", json1.UserId)
 	if err != nil {
