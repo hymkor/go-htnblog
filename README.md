@@ -75,21 +75,23 @@ Saved configuration to C:\Users\hymkor\.htnblog
 [cmd/htnblog/main.go](cmd/htnblog/main.go)
 
 - `htnblog` (オプションなし) … ヘルプ
+- `htnblog init` … 設定の編集
 - `htnblog list` … 直近10件の記事のリスト
 - `htnblog new` … 新規記事のドラフトを作成
 - `htnblog edit {URL|@0|@1|…}` … 既存記事の編集
-- `htnblog init` … 設定の編集
+- `htnblog publish {URL|@0|@1|…}` … 指定した記事を下書き状態から公開状態へ変更する
 
 ```./htnblog |
-htnblog v0.6.0-14-gb6cfc82-windows-amd64 by go1.21.5
+htnblog v0.7.0-4-g1674ef3-windows-amd64 by go1.21.5
 
 Usage: htnblog {options...} {init|list|new|type|edit}
-  htnblog init                  ... edit configuration
-  htnblog list                  ... show recent articles
-  htnblog new                   ... create a new draft
-  htnblog type   {URL|@0|@1|..} ... output the article to STDOUT
-  htnblog edit   {URL|@0|@1|..} ... edit the article
-  htnblog delete {URL|@0|@1|..} ... output the article to STDOUT and delete it
+  htnblog init                   ... edit configuration
+  htnblog list                   ... show recent articles
+  htnblog new                    ... create a new draft
+  htnblog type    {URL|@0|@1|..} ... output the article to STDOUT
+  htnblog edit    {URL|@0|@1|..} ... edit the article
+  htnblog delete  {URL|@0|@1|..} ... output the article to STDOUT and delete it
+  htnblog publish {URL|@0|@1|..} ... set false the draft flag of the article
     The lines in the draft up to "---" are the header lines,
     and the rest is the article body.
 
