@@ -101,8 +101,6 @@ Usage: htnblog {options...} {init|list|new|type|edit}
     	fetch articles (default 100)
   -rc string
     	use the specified file instead of ~/.htnblog
-  -updated string
-    	(experimental) set the updated date like 2006-01-02T15:04:05-07:00
 ```
 
 Goライブラリ go-htnblog
