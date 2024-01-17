@@ -22,19 +22,22 @@ func NewFromJSON(json1 []byte) (*Blog, error) {
 	return blog, err
 }
 
-func drop(r io.ReadCloser) error {
-	if _, err := io.Copy(io.Discard, r); err != nil {
+func drop(w io.Writer, r io.ReadCloser) error {
+	if w == nil {
+		w = io.Discard
+	}
+	if _, err := io.Copy(w, r); err != nil {
 		r.Close()
 		return err
 	}
 	return r.Close()
 }
 
-func DropResponse(res *http.Response, err error) error {
+func (B *Blog) DropResponse(res *http.Response, err error) error {
 	if err != nil {
 		return err
 	}
-	return drop(res.Body)
+	return drop(B.DebugPrint, res.Body)
 }
 
 func (B *Blog) request(method, endPointUrl string, r io.Reader) (*http.Response, error) {
@@ -47,11 +50,11 @@ func (B *Blog) request(method, endPointUrl string, r io.Reader) (*http.Response,
 	var client http.Client
 	res, err := client.Do(req)
 	if err != nil {
-		drop(res.Body)
+		drop(B.DebugPrint, res.Body)
 		return nil, fmt.Errorf("(http.Client) Do: %w", err)
 	}
 	if len(res.Status) < 1 || res.Status[0] != '2' {
-		drop(res.Body)
+		drop(B.DebugPrint, res.Body)
 		return nil, fmt.Errorf("(http.Client) Do: Status: %s", res.Status)
 	}
 	return res, nil

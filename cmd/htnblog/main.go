@@ -263,7 +263,7 @@ func newEntry(blog *htnblog.Blog) error {
 	if res != nil {
 		fmt.Fprintln(os.Stderr, res.Status)
 	}
-	return htnblog.DropResponse(res, err)
+	return blog.DropResponse(res, err)
 }
 
 func chomp(text []byte) []byte {
@@ -353,7 +353,7 @@ func editEntry1(blog *htnblog.Blog, entry *htnblog.XmlEntry) error {
 	if res != nil {
 		fmt.Fprintln(os.Stderr, res.Status)
 	}
-	return htnblog.DropResponse(res, err)
+	return blog.DropResponse(res, err)
 }
 
 func url2id(url string) string {
@@ -440,7 +440,7 @@ func publishEntry(blog *htnblog.Blog, args []string) error {
 	if res != nil {
 		fmt.Fprintln(os.Stderr, res.Status)
 	}
-	return htnblog.DropResponse(res, err)
+	return blog.DropResponse(res, err)
 }
 
 func unpublishEntry(blog *htnblog.Blog, args []string) error {
@@ -453,7 +453,7 @@ func unpublishEntry(blog *htnblog.Blog, args []string) error {
 	if res != nil {
 		fmt.Fprintln(os.Stderr, res.Status)
 	}
-	return htnblog.DropResponse(res, err)
+	return blog.DropResponse(res, err)
 }
 
 func deleteEntry(blog *htnblog.Blog, args []string) error {
@@ -471,7 +471,7 @@ func deleteEntry(blog *htnblog.Blog, args []string) error {
 		if res != nil {
 			fmt.Fprintln(os.Stderr, res.Status)
 		}
-		return htnblog.DropResponse(res, err)
+		return blog.DropResponse(res, err)
 	} else {
 		fmt.Fprintln(os.Stderr, "Canceled")
 		return nil
@@ -536,7 +536,7 @@ Usage: htnblog {options...} {init|list|new|type|edit}
 		UserId:      json1.UserId,
 		EndPointUrl: endp,
 		ApiKey:      json1.ApiKey,
-		DebugPrint:  io.Discard,
+		// DebugPrint:  os.Stderr,
 	}
 
 	switch args[0] {
