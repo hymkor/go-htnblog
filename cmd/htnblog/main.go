@@ -18,10 +18,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mattn/go-tty"
+
 	"github.com/nyaosorg/go-readline-ny"
 
 	"github.com/hymkor/go-windows1x-virtualterminal"
-	"github.com/hymkor/go-windows1x-virtualterminal/keyin"
 	"github.com/hymkor/trash-go"
 
 	"github.com/hymkor/go-htnblog"
@@ -167,30 +168,35 @@ func whichEditor() string {
 	return editor
 }
 
-func askYesNo() bool {
+func askYesNo() (bool, error) {
 	if *flagForce {
-		return true
+		return true, nil
 	}
-	if closer, err := keyin.Raw(); err == nil {
-		defer closer()
-	} else {
-		return false
-	}
-	io.WriteString(os.Stdout, "\nAre you sure (Yes/[No]): ")
-	key, err := keyin.Get()
+	tty1, err := tty.Open()
 	if err != nil {
-		return false
+		return false, err
 	}
-	return key == "y" || key == "Y"
+	defer tty1.Close()
+
+	io.WriteString(os.Stdout, "\nAre you sure (Yes/[No]): ")
+
+	key, err := readline.GetKey(tty1)
+	if err != nil {
+		return false, err
+	}
+	return key == "y" || key == "Y", nil
 }
 
 func askYesNoEdit() (rune, error) {
-	if closer, err := keyin.Raw(); err == nil {
-		defer closer()
+	tty1, err := tty.Open()
+	if err != nil {
+		return 0, err
 	}
+	defer tty1.Close()
+
 	for {
 		io.WriteString(os.Stdout, "Are you sure to post ? ([Yes]/No/Edit): ")
-		key, err := keyin.Get()
+		key, err := readline.GetKey(tty1)
 		if err != nil {
 			return 0, err
 		}
@@ -439,7 +445,11 @@ func deleteEntry(blog *htnblog.Blog, args []string) error {
 		return err
 	}
 	os.Stdout.Write(entryToDraft(entry))
-	if askYesNo() {
+	ans, err := askYesNo()
+	if err != nil {
+		return err
+	}
+	if ans {
 		fmt.Println("\n-> Deleted")
 		return blog.Delete(entry.EditUrl())
 	} else {
@@ -530,9 +540,6 @@ Usage: htnblog {options...} {init|list|new|type|edit}
 }
 
 func main() {
-	if closer, err := virtualterminal.EnableStdin(); err == nil {
-		defer closer()
-	}
 	if closer, err := virtualterminal.EnableStdout(); err == nil {
 		defer closer()
 	}
