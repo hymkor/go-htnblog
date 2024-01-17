@@ -35,6 +35,7 @@ var (
 	flagSecond = flag.Bool("2", false, "Use the value of \"endpointurl2\" in the JSON setting")
 	flagThrid  = flag.Bool("3", false, "Use the value of \"endpointurl3\" in the JSON setting")
 	flagForce  = flag.Bool("f", false, "Delete without prompt")
+	flagDebug  = flag.Bool("debug", false, "Enable Debug Output")
 )
 
 type configuration struct {
@@ -536,7 +537,9 @@ Usage: htnblog {options...} {init|list|new|type|edit}
 		UserId:      json1.UserId,
 		EndPointUrl: endp,
 		ApiKey:      json1.ApiKey,
-		// DebugPrint:  os.Stderr,
+	}
+	if *flagDebug {
+		blog.DebugPrint = os.Stderr
 	}
 
 	switch args[0] {
