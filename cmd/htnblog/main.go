@@ -415,6 +415,24 @@ func typeEntry(blog *htnblog.Blog, args []string) error {
 	return nil
 }
 
+func publishEntry(blog *htnblog.Blog, args []string) error {
+	entry, err := chooseEntry(blog, args)
+	if err != nil {
+		return err
+	}
+	entry.Control.Draft = "no"
+	return htnblog.Dump(blog.Update(entry))
+}
+
+func unpublishEntry(blog *htnblog.Blog, args []string) error {
+	entry, err := chooseEntry(blog, args)
+	if err != nil {
+		return err
+	}
+	entry.Control.Draft = "yes"
+	return htnblog.Dump(blog.Update(entry))
+}
+
 func deleteEntry(blog *htnblog.Blog, args []string) error {
 	entry, err := chooseEntry(blog, args)
 	if err != nil {
@@ -440,12 +458,13 @@ func mains(args []string) error {
 
 		io.WriteString(os.Stderr, `
 Usage: htnblog {options...} {init|list|new|type|edit}
-  htnblog init                  ... edit configuration
-  htnblog list                  ... show recent articles
-  htnblog new                   ... create a new draft
-  htnblog type   {URL|@0|@1|..} ... output the article to STDOUT
-  htnblog edit   {URL|@0|@1|..} ... edit the article
-  htnblog delete {URL|@0|@1|..} ... output the article to STDOUT and delete it
+  htnblog init                   ... edit configuration
+  htnblog list                   ... show recent articles
+  htnblog new                    ... create a new draft
+  htnblog type    {URL|@0|@1|..} ... output the article to STDOUT
+  htnblog edit    {URL|@0|@1|..} ... edit the article
+  htnblog delete  {URL|@0|@1|..} ... output the article to STDOUT and delete it
+  htnblog publish {URL|@0|@1|..} ... set false the draft flag of the article
     The lines in the draft up to "---" are the header lines,
     and the rest is the article body.
 
@@ -501,6 +520,10 @@ Usage: htnblog {options...} {init|list|new|type|edit}
 		return typeEntry(blog, args[1:])
 	case "delete":
 		return deleteEntry(blog, args[1:])
+	case "publish":
+		return publishEntry(blog, args[1:])
+	case "unpublish":
+		return unpublishEntry(blog, args[1:])
 	default:
 		return fmt.Errorf("%s: no such subcommand", args[0])
 	}
