@@ -86,11 +86,13 @@ func ask(prompt, defaults string) (string, error) {
 	return answer, err
 }
 
-func nonZeroValue(a, b string) string {
-	if a == "" {
-		return b
+func nonZeroValue(values ...string) string {
+	for _, v := range values {
+		if v != "" {
+			return v
+		}
 	}
-	return a
+	return ""
 }
 
 func initConfig() (*configuration, error) {
@@ -124,7 +126,7 @@ func initConfig() (*configuration, error) {
 		return nil, err
 	}
 	json1.Editor, err = ask("Text Editor Path ? ",
-		nonZeroValue(json1.Editor, os.Getenv("EDITOR")))
+		nonZeroValue(json1.Editor, os.Getenv("EDITOR"), osDefaultEditor()))
 	if err != nil {
 		return nil, err
 	}
