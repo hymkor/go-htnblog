@@ -34,10 +34,11 @@ func (feed *xmlFeed) listNext() (*xmlFeed, error) {
 }
 
 func (B *Blog) get(url string, v interface{}) error {
-	body, err := B.request(http.MethodGet, url, nil)
+	res, err := B.request(http.MethodGet, url, nil)
 	if err != nil {
 		return err
 	}
+	body := res.Body
 	defer body.Close()
 	bin, err := io.ReadAll(body)
 	if err != nil {
@@ -104,20 +105,20 @@ func (B *Blog) Get(entryId string) (*XmlEntry, error) {
 }
 
 func (B *Blog) Dump(w io.Writer) error {
-	body, err := B.request(http.MethodGet, B.EndPointUrl+"/entry", nil)
+	res, err := B.request(http.MethodGet, B.EndPointUrl+"/entry", nil)
 	if err != nil {
 		return err
 	}
-	defer body.Close()
+	defer res.Body.Close()
 
-	_, err = io.Copy(w, body)
+	_, err = io.Copy(w, res.Body)
 	return err
 }
 
 func (B *Blog) Delete(editUrl string) error {
-	body, err := B.request(http.MethodDelete, editUrl, nil)
+	res, err := B.request(http.MethodDelete, editUrl, nil)
 	if err != nil {
 		return err
 	}
-	return drop(body)
+	return drop(res.Body)
 }
