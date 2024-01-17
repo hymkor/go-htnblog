@@ -82,7 +82,7 @@ Saved configuration to C:\Users\hymkor\.htnblog
 - `htnblog publish {URL|@0|@1|…}` … 指定した記事を下書き状態から公開状態へ変更する
 
 ```./htnblog |
-htnblog v0.7.0-4-g1674ef3-windows-amd64 by go1.21.5
+htnblog v0.7.0-13-gea7ce11-windows-amd64 by go1.21.5
 
 Usage: htnblog {options...} {init|list|new|type|edit}
   htnblog init                   ... edit configuration
@@ -180,7 +180,7 @@ func post() error {
     if err != nil {
         return err
     }
-    return htnblog.Dump(blog.Post(time.Now().Format("投稿 2006-01-02 15:04:05"), "本文を書く"))
+    return htnblog.Dump(blog.Post(time.Now().Format("投稿 2006-01-02 15:04:05"), "本文を書く", "yes"))
 }
 
 func main() {
