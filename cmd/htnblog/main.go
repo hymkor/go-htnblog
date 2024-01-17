@@ -181,6 +181,7 @@ func askYesNo() (bool, error) {
 	io.WriteString(os.Stdout, "\nAre you sure (Yes/[No]): ")
 
 	key, err := readline.GetKey(tty1)
+	fmt.Println(key)
 	if err != nil {
 		return false, err
 	}
@@ -258,7 +259,11 @@ func newEntry(blog *htnblog.Blog) error {
 	}
 	header, body := splitHeaderAndBody(draft)
 	title := header["title"]
-	return htnblog.Dump(blog.Post(title, strings.TrimSpace(string(body)), "yes"))
+	res, err := blog.Post(title, strings.TrimSpace(string(body)), "yes")
+	if res != nil {
+		fmt.Fprintln(os.Stderr, res.Status)
+	}
+	return htnblog.DropResponse(res, err)
 }
 
 func chomp(text []byte) []byte {
@@ -344,7 +349,11 @@ func editEntry1(blog *htnblog.Blog, entry *htnblog.XmlEntry) error {
 		buffer.Write(draft)
 		draft = buffer.Bytes()
 	}
-	return htnblog.Dump(blog.Update(entry))
+	res, err := blog.Update(entry)
+	if res != nil {
+		fmt.Fprintln(os.Stderr, res.Status)
+	}
+	return htnblog.DropResponse(res, err)
 }
 
 func url2id(url string) string {
@@ -427,7 +436,11 @@ func publishEntry(blog *htnblog.Blog, args []string) error {
 		return err
 	}
 	entry.Control.Draft = "no"
-	return htnblog.Dump(blog.Update(entry))
+	res, err := blog.Update(entry)
+	if res != nil {
+		fmt.Fprintln(os.Stderr, res.Status)
+	}
+	return htnblog.DropResponse(res, err)
 }
 
 func unpublishEntry(blog *htnblog.Blog, args []string) error {
@@ -436,7 +449,11 @@ func unpublishEntry(blog *htnblog.Blog, args []string) error {
 		return err
 	}
 	entry.Control.Draft = "yes"
-	return htnblog.Dump(blog.Update(entry))
+	res, err := blog.Update(entry)
+	if res != nil {
+		fmt.Fprintln(os.Stderr, res.Status)
+	}
+	return htnblog.DropResponse(res, err)
 }
 
 func deleteEntry(blog *htnblog.Blog, args []string) error {
@@ -450,10 +467,13 @@ func deleteEntry(blog *htnblog.Blog, args []string) error {
 		return err
 	}
 	if ans {
-		fmt.Println("\n-> Deleted")
-		return htnblog.DropResponse(blog.Delete(entry))
+		res, err := blog.Delete(entry)
+		if res != nil {
+			fmt.Fprintln(os.Stderr, res.Status)
+		}
+		return htnblog.DropResponse(res, err)
 	} else {
-		fmt.Println("\n-> Canceled")
+		fmt.Fprintln(os.Stderr, "Canceled")
 		return nil
 	}
 }
@@ -516,7 +536,7 @@ Usage: htnblog {options...} {init|list|new|type|edit}
 		UserId:      json1.UserId,
 		EndPointUrl: endp,
 		ApiKey:      json1.ApiKey,
-		DebugPrint:  os.Stderr,
+		DebugPrint:  io.Discard,
 	}
 
 	switch args[0] {
