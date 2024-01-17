@@ -76,6 +76,7 @@ var config = sync.OnceValues(func() (*configuration, error) {
 
 func ask(prompt, defaults string) (string, error) {
 	editor := &readline.Editor{
+		Writer: os.Stderr,
 		PromptWriter: func(w io.Writer) (int, error) {
 			return io.WriteString(w, prompt)
 		},
@@ -143,7 +144,7 @@ func initConfig() (*configuration, error) {
 	if err != nil {
 		return nil, err
 	}
-	_, err = fmt.Println("Saved configuration to", configPath)
+	_, err = fmt.Fprintln(os.Stderr, "Saved configuration to", configPath)
 	return json1, err
 }
 
@@ -181,10 +182,10 @@ func askYesNo() (bool, error) {
 	}
 	defer tty1.Close()
 
-	io.WriteString(os.Stdout, "\nAre you sure (Yes/[No]): ")
+	io.WriteString(os.Stderr, "\nAre you sure (y/n): ")
 
 	key, err := readline.GetKey(tty1)
-	fmt.Println(key)
+	fmt.Fprintln(os.Stderr, key)
 	if err != nil {
 		return false, err
 	}
@@ -199,12 +200,12 @@ func askYesNoEdit() (rune, error) {
 	defer tty1.Close()
 
 	for {
-		io.WriteString(os.Stdout, "Are you sure to post ? ([Yes]/No/Edit): ")
+		io.WriteString(os.Stderr, "Are you sure to post ? (y/n/edit): ")
 		key, err := readline.GetKey(tty1)
+		fmt.Fprintln(os.Stderr, key)
 		if err != nil {
 			return 0, err
 		}
-		fmt.Println(key)
 		key = strings.ToLower(key)
 		if key[0] == 'y' || key[0] == '\r' {
 			return 'y', nil
