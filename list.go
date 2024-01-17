@@ -115,10 +115,6 @@ func (B *Blog) Dump(w io.Writer) error {
 	return err
 }
 
-func (B *Blog) Delete(editUrl string) error {
-	res, err := B.request(http.MethodDelete, editUrl, nil)
-	if err != nil {
-		return err
-	}
-	return drop(res.Body)
+func (B *Blog) Delete(entry *XmlEntry) (*http.Response, error) {
+	return B.request(http.MethodDelete, entry.EditUrl(), nil)
 }

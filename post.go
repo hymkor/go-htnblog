@@ -30,6 +30,13 @@ func drop(r io.ReadCloser) error {
 	return r.Close()
 }
 
+func DropResponse(res *http.Response, err error) error {
+	if err != nil {
+		return err
+	}
+	return drop(res.Body)
+}
+
 func (B *Blog) request(method, endPointUrl string, r io.Reader) (*http.Response, error) {
 	req, err := http.NewRequest(method, endPointUrl, r)
 	if err != nil {
@@ -50,15 +57,7 @@ func (B *Blog) request(method, endPointUrl string, r io.Reader) (*http.Response,
 	return res, nil
 }
 
-func (B *Blog) Post(title, content string) (io.ReadCloser, error) {
-	res, err := B.post(title, content, "yes")
-	if err != nil {
-		return nil, err
-	}
-	return res.Body, nil
-}
-
-func (B *Blog) post(title, content, isDraft string) (*http.Response, error) {
+func (B *Blog) Post(title, content, isDraft string) (*http.Response, error) {
 	entry := &XmlEntry{
 		Title: title,
 		Content: XmlContent{
@@ -76,15 +75,7 @@ func (B *Blog) post(title, content, isDraft string) (*http.Response, error) {
 	return B.request(http.MethodPost, B.EndPointUrl+"/entry", strings.NewReader(output))
 }
 
-func (B *Blog) Update(entry *XmlEntry) (io.ReadCloser, error) {
-	res, err := B.update(entry)
-	if err != nil {
-		return nil, err
-	}
-	return res.Body, nil
-}
-
-func (B *Blog) update(entry *XmlEntry) (*http.Response, error) {
+func (B *Blog) Update(entry *XmlEntry) (*http.Response, error) {
 	output, err := entry.Marshal()
 	if err != nil {
 		return nil, fmt.Errorf("Marshal: %w", err)
@@ -97,10 +88,10 @@ func (B *Blog) update(entry *XmlEntry) (*http.Response, error) {
 	return B.request(http.MethodPut, entry.EditUrl(), strings.NewReader(output))
 }
 
-func Dump(r io.ReadCloser, err error) error {
+func Dump(res *http.Response, err error) error {
 	if err != nil {
 		return err
 	}
-	io.Copy(os.Stdout, r)
-	return r.Close()
+	io.Copy(os.Stdout, res.Body)
+	return res.Body.Close()
 }

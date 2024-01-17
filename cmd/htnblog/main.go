@@ -258,7 +258,7 @@ func newEntry(blog *htnblog.Blog) error {
 	}
 	header, body := splitHeaderAndBody(draft)
 	title := header["title"]
-	return htnblog.Dump(blog.Post(title, strings.TrimSpace(string(body))))
+	return htnblog.Dump(blog.Post(title, strings.TrimSpace(string(body)), "yes"))
 }
 
 func chomp(text []byte) []byte {
@@ -451,7 +451,7 @@ func deleteEntry(blog *htnblog.Blog, args []string) error {
 	}
 	if ans {
 		fmt.Println("\n-> Deleted")
-		return blog.Delete(entry.EditUrl())
+		return htnblog.DropResponse(blog.Delete(entry))
 	} else {
 		fmt.Println("\n-> Canceled")
 		return nil
