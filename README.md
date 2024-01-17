@@ -82,7 +82,7 @@ Saved configuration to C:\Users\hymkor\.htnblog
 - `htnblog publish {URL|@0|@1|…}` … 指定した記事を下書き状態から公開状態へ変更する
 
 ```./htnblog |
-htnblog v0.7.0-13-gea7ce11-windows-amd64 by go1.21.5
+htnblog v0.7.0-17-g1c8fc9d-windows-amd64 by go1.21.5
 
 Usage: htnblog {options...} {init|list|new|type|edit}
   htnblog init                   ... edit configuration
@@ -98,6 +98,8 @@ Usage: htnblog {options...} {init|list|new|type|edit}
   -1	Use the value of "endpointurl1" in the JSON setting
   -2	Use the value of "endpointurl2" in the JSON setting
   -3	Use the value of "endpointurl3" in the JSON setting
+  -debug
+    	Enable Debug Output
   -f	Delete without prompt
   -n int
     	fetch articles (default 100)
