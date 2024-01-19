@@ -26,6 +26,7 @@ import (
 	"github.com/hymkor/trash-go"
 
 	"github.com/hymkor/go-htnblog"
+	"github.com/hymkor/go-htnblog/internal/defaulteditor"
 )
 
 var (
@@ -87,13 +88,11 @@ func ask(prompt, defaults string) (string, error) {
 	return answer, err
 }
 
-func nonZeroValue(values ...string) string {
-	for _, v := range values {
-		if v != "" {
-			return v
-		}
+func nonZeroValue(a, b string) string {
+	if a == "" {
+		return b
 	}
-	return ""
+	return a
 }
 
 func initConfig() (*configuration, error) {
@@ -127,7 +126,7 @@ func initConfig() (*configuration, error) {
 		return nil, err
 	}
 	json1.Editor, err = ask("Text Editor Path ? ",
-		nonZeroValue(json1.Editor, os.Getenv("EDITOR"), osDefaultEditor()))
+		nonZeroValue(json1.Editor, defaulteditor.Find()))
 	if err != nil {
 		return nil, err
 	}

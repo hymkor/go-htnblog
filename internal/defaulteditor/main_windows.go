@@ -1,11 +1,10 @@
-package main
+package defaulteditor
 
 import (
 	"os"
 	"path/filepath"
-	"sync"
 )
 
-var osDefaultEditor = sync.OnceValue(func() string {
+func find() string {
 	return filepath.Join(os.Getenv("windir"), "system32", "notepad.exe")
-})
+}
