@@ -2,20 +2,15 @@ package main
 
 import (
 	"bytes"
-	"context"
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/mattn/go-tty"
@@ -23,14 +18,11 @@ import (
 	"github.com/nyaosorg/go-readline-ny"
 
 	"github.com/hymkor/go-windows1x-virtualterminal"
-	"github.com/hymkor/trash-go"
 
 	"github.com/hymkor/go-htnblog"
-	"github.com/hymkor/go-htnblog/internal/defaulteditor"
 )
 
 var (
-	flagRcFile = flag.String("rc", "", "use the specified file instead of ~/.htnblog")
 	flagMax    = flag.Int("n", 100, "fetch articles")
 	flagFirst  = flag.Bool("1", false, "Use the value of \"endpointurl1\" in the JSON setting")
 	flagSecond = flag.Bool("2", false, "Use the value of \"endpointurl2\" in the JSON setting")
@@ -38,114 +30,6 @@ var (
 	flagForce  = flag.Bool("f", false, "Delete without prompt")
 	flagDebug  = flag.Bool("debug", false, "Enable Debug Output")
 )
-
-type configuration struct {
-	UserId      string `json:"userid"`
-	EndPointUrl string `json:"endpointurl"`
-	ApiKey      string `json:"apikey"`
-	Editor      string `json:"editor"`
-	Url1        string `json:"endpointurl1"`
-	Url2        string `json:"endpointurl2"`
-	Url3        string `json:"endpointurl3"`
-}
-
-var getConfigPath = sync.OnceValues(func() (string, error) {
-	if *flagRcFile != "" {
-		return *flagRcFile, nil
-	}
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return "", err
-	}
-	return filepath.Join(home, ".htnblog"), nil
-})
-
-var config = sync.OnceValues(func() (*configuration, error) {
-	configPath, err := getConfigPath()
-	if err != nil {
-		return nil, err
-	}
-	bin, err := os.ReadFile(configPath)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", configPath, err)
-	}
-
-	var json1 configuration
-	err = json.Unmarshal(bin, &json1)
-	return &json1, err
-})
-
-func ask(prompt, defaults string) (string, error) {
-	editor := &readline.Editor{
-		Writer: os.Stderr,
-		PromptWriter: func(w io.Writer) (int, error) {
-			return io.WriteString(w, prompt)
-		},
-		Default: defaults,
-	}
-	answer, err := editor.ReadLine(context.Background())
-	answer = strings.TrimSpace(answer)
-	return answer, err
-}
-
-func nonZeroValue(a, b string) string {
-	if a == "" {
-		return b
-	}
-	return a
-}
-
-func initConfig() (*configuration, error) {
-	json1, err := config()
-	if err != nil {
-		json1 = &configuration{}
-	}
-	json1.UserId, err = ask("Hatena-id ? ", json1.UserId)
-	if err != nil {
-		return nil, err
-	}
-	json1.ApiKey, err = ask("API-KEY ? ", json1.ApiKey)
-	if err != nil {
-		return nil, err
-	}
-	json1.Url1, err = ask("End Point URL 1 ? ", json1.Url1)
-	if err != nil {
-		return nil, err
-	}
-	json1.Url2, err = ask("End Point URL 2 ? ", json1.Url2)
-	if err != nil {
-		return nil, err
-	}
-	json1.Url3, err = ask("End Point URL 3 ? ", json1.Url3)
-	if err != nil {
-		return nil, err
-	}
-	json1.EndPointUrl, err = ask("End Point URL (default) ? ",
-		nonZeroValue(json1.EndPointUrl, json1.Url1))
-	if err != nil {
-		return nil, err
-	}
-	json1.Editor, err = ask("Text Editor Path ? ",
-		nonZeroValue(json1.Editor, defaulteditor.Find()))
-	if err != nil {
-		return nil, err
-	}
-
-	bin, err := json.MarshalIndent(json1, "", "\t")
-	if err != nil {
-		return nil, err
-	}
-	configPath, err := getConfigPath()
-	if err != nil {
-		return nil, err
-	}
-	err = writeFileWithBackup(configPath, bin, 0600)
-	if err != nil {
-		return nil, err
-	}
-	_, err = fmt.Fprintln(os.Stderr, "Saved configuration to", configPath)
-	return json1, err
-}
 
 func list(blog *htnblog.Blog) error {
 	i := 0
@@ -157,18 +41,6 @@ func list(blog *htnblog.Blog) error {
 		i++
 		return i < *flagMax
 	})
-}
-
-func whichEditor() string {
-	json1, err := config()
-	if err == nil && json1.Editor != "" {
-		return json1.Editor
-	}
-	editor, ok := os.LookupEnv("EDITOR")
-	if !ok {
-		return ""
-	}
-	return editor
 }
 
 func askYesNo() (bool, error) {
@@ -189,67 +61,6 @@ func askYesNo() (bool, error) {
 		return false, err
 	}
 	return key == "y" || key == "Y", nil
-}
-
-func askYesNoEdit() (rune, error) {
-	tty1, err := tty.Open()
-	if err != nil {
-		return 0, err
-	}
-	defer tty1.Close()
-
-	for {
-		io.WriteString(os.Stderr, "Are you sure to post ? (y/n/edit): ")
-		key, err := readline.GetKey(tty1)
-		fmt.Fprintln(os.Stderr, key)
-		if err != nil {
-			return 0, err
-		}
-		key = strings.ToLower(key)
-		if key[0] == 'y' || key[0] == '\r' {
-			return 'y', nil
-		}
-		if key[0] == 'n' {
-			return 'n', nil
-		}
-		if key[0] == 'e' {
-			return 'e', nil
-		}
-	}
-}
-
-func callEditor(draft []byte) ([]byte, error) {
-	editor := whichEditor()
-	if editor == "" {
-		return nil, errors.New(`editor not found. Please set $EDITOR or { "editor":"(YOUR-EDITOR)}" on ~/.htnblog`)
-	}
-	tempPath := filepath.Join(os.TempDir(), fmt.Sprintf("htnblog-%d.md", os.Getpid()))
-	os.WriteFile(tempPath, draft, 0600)
-	defer trash.Throw(tempPath)
-
-	for {
-		cmd := exec.Command(editor, tempPath)
-		cmd.Stdin = os.Stdin
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		err := cmd.Run()
-		if err != nil {
-			return nil, fmt.Errorf("%w\n\"%s\" aborted", err, editor)
-		}
-		text, err := os.ReadFile(tempPath)
-		if err != nil {
-			return nil, err
-		}
-		key, err := askYesNoEdit()
-		if err != nil {
-			return nil, err
-		}
-		if key == 'y' {
-			return text, nil
-		} else if key == 'n' {
-			return nil, errors.New("post is canceled")
-		}
-	}
 }
 
 func newEntry(blog *htnblog.Blog) error {
@@ -330,8 +141,6 @@ func draftToEntry(draft []byte, entry *htnblog.XmlEntry) error {
 	entry.Content.Body = string(body)
 	return nil
 }
-
-var rxDateTime = regexp.MustCompile(`^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\+\d\d:\d\d$`)
 
 func editEntry1(blog *htnblog.Blog, entry *htnblog.XmlEntry) error {
 	draft := entryToDraft(entry)
