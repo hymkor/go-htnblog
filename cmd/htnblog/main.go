@@ -139,7 +139,7 @@ func initConfig() (*configuration, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = os.WriteFile(configPath, bin, 0644)
+	err = writeFileWithBackup(configPath, bin, 0600)
 	if err != nil {
 		return nil, err
 	}
