@@ -2,6 +2,7 @@
     - `htnblog init` 変更前の .htnblog を .htnblog~ にバックアップしておくようにした
     - `htnblog init` (linux) 保存する .htnblog のパーミッションを 0644 ではなく、0600 とした
     - 編集ページをウェブブラウザで開くサブコマンド: `htnblog browse` を追加
+    - `htnblog list` で `-n` オプションで指定されなかった場合の表示記事数を 100 から 10 に変更した
 
 v0.8.0
 ======
