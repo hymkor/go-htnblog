@@ -26,7 +26,7 @@ import (
 )
 
 var (
-	flagMax    = flag.Int("n", 100, "fetch articles")
+	flagMax    = flag.Int("n", 10, "fetch articles")
 	flagFirst  = flag.Bool("1", false, "Use the value of \"endpointurl1\" in the JSON setting")
 	flagSecond = flag.Bool("2", false, "Use the value of \"endpointurl2\" in the JSON setting")
 	flagThrid  = flag.Bool("3", false, "Use the value of \"endpointurl3\" in the JSON setting")
