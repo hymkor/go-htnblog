@@ -160,7 +160,10 @@ func main() {
 
 [examples/post.go](examples/post.go)
 
-`(*Blog) Post` 関数は戻り値としてウェブアクセスの返信を io.ReadCloser と error で返してきます。 いちいち処理するのが面倒なので `htnblog.Dump` という関数を用意して、そのまま標準出力に転送して Close させています。
+`(*Blog) Post` 関数は戻り値としてウェブアクセスの返信を `*http.Response` と `error` で返してきます。エラーでない場合は `*https.Response` の Body という io.Reader を全部読みとって、Close しなければいけないのですが、それらはエラーの判断も含めて `(*Blog).DropResponse` というメソッドに委ねています。同メソッドでは通常は読み取ったデータを io.Discard に捨てていますが、DebugPrint という io.Writer のフィールドが nil でない場合はそちらへコピーします
+( つまり例では標準エラー出力にサーバーのレスポンスを表示させています )
+
+`$ go run examples/post.go < ~/.htnblog`
 
 ```examples/post.go
 package main
@@ -183,7 +186,8 @@ func post() error {
     if err != nil {
         return err
     }
-    return htnblog.Dump(blog.Post(time.Now().Format("投稿 2006-01-02 15:04:05"), "本文を書く", "yes"))
+    blog.DebugPrint = os.Stderr
+    return blog.DropResponse(blog.Post(time.Now().Format("投稿 2006-01-02 15:04:05"), "本文を書く", "yes"))
 }
 
 func main() {
@@ -197,6 +201,8 @@ func main() {
 ### 使用例: 最も新しい記事を編集
 
 [examples/edit.go](examples/edit.go)
+
+`$ go run examples/edit.go < ~/.htnblog`
 
 ```examples/edit.go
 package main
@@ -229,7 +235,8 @@ func edit() error {
         return errors.New("no entries")
     }
     entries[0].Content.Body += time.Now().Format("\n編集 2006-01-02 15:04:05")
-    return htnblog.Dump(blog.Update(entries[0]))
+    blog.DebugPrint = os.Stderr
+    return blog.DropResponse(blog.Update(entries[0]))
 }
 
 func main() {
