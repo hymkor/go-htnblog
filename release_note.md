@@ -1,3 +1,7 @@
+v0.9.0
+======
+(2024.01.20)
+
 - htnblog.exe:
     - `htnblog init` 変更前の .htnblog を .htnblog~ にバックアップしておくようにした
     - `htnblog init` (linux) 保存する .htnblog のパーミッションを 0644 ではなく、0600 とした
