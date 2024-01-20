@@ -6,7 +6,9 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"runtime"
 	"strconv"
@@ -14,6 +16,7 @@ import (
 	"time"
 
 	"github.com/mattn/go-tty"
+	"github.com/toqueteos/webbrowser"
 
 	"github.com/nyaosorg/go-readline-ny"
 
@@ -290,6 +293,19 @@ func deleteEntry(blog *htnblog.Blog, args []string) error {
 	}
 }
 
+func browseEntry(blog *htnblog.Blog, args []string) error {
+	entry, err := chooseEntry(blog, args)
+	if err != nil {
+		return err
+	}
+	entryId := path.Base(entry.EditUrl())
+	theUrl, err := url.JoinPath(blog.EndPointUrl, "../edit")
+	if err != nil {
+		return err
+	}
+	return webbrowser.Open(theUrl + "?entry=" + entryId)
+}
+
 var version string
 
 func mains(args []string) error {
@@ -307,6 +323,8 @@ Usage: htnblog {options...} {init|list|new|type|edit}
   htnblog edit    {URL|@0|@1|..} ... edit the article
   htnblog delete  {URL|@0|@1|..} ... output the article to STDOUT and delete it
   htnblog publish {URL|@0|@1|..} ... set false the draft flag of the article
+  htnblog browse  {URL|@0|@1|..} ... open the edit page in a web browser
+
     The lines in the draft up to "---" are the header lines,
     and the rest is the article body.
 
@@ -368,6 +386,8 @@ Usage: htnblog {options...} {init|list|new|type|edit}
 		return publishEntry(blog, args[1:])
 	case "unpublish":
 		return unpublishEntry(blog, args[1:])
+	case "browse":
+		return browseEntry(blog, args[1:])
 	default:
 		return fmt.Errorf("%s: no such subcommand", args[0])
 	}
