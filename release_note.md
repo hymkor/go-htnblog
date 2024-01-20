@@ -1,6 +1,7 @@
 - htnblog.exe:
-    - init: 変更前の .htnblog を .htnblog~ にバックアップしておくようにした
-    - init: (linux) 保存する .htnblog のパーミッションを 0644 ではなく、0600 とした
+    - `htnblog init` 変更前の .htnblog を .htnblog~ にバックアップしておくようにした
+    - `htnblog init` (linux) 保存する .htnblog のパーミッションを 0644 ではなく、0600 とした
+    - 編集ページをウェブブラウザで開くサブコマンド: `htnblog browse` を追加
 
 v0.8.0
 ======
