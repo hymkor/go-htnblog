@@ -30,7 +30,8 @@ func edit() error {
 		return errors.New("no entries")
 	}
 	entries[0].Content.Body += time.Now().Format("\n編集 2006-01-02 15:04:05")
-	return htnblog.Dump(blog.Update(entries[0]))
+	blog.DebugPrint = os.Stderr
+	return blog.DropResponse(blog.Update(entries[0]))
 }
 
 func main() {

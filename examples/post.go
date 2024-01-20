@@ -20,7 +20,8 @@ func post() error {
 	if err != nil {
 		return err
 	}
-	return htnblog.Dump(blog.Post(time.Now().Format("投稿 2006-01-02 15:04:05"), "本文を書く", "yes"))
+	blog.DebugPrint = os.Stderr
+	return blog.DropResponse(blog.Post(time.Now().Format("投稿 2006-01-02 15:04:05"), "本文を書く", "yes"))
 }
 
 func main() {
