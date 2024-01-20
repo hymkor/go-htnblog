@@ -78,7 +78,7 @@ Saved configuration to C:\Users\hymkor\.htnblog
 - `htnblog init` … 設定の編集
 - `htnblog list` … 直近10件の記事のリスト
 - `htnblog new` … 新規記事のドラフトを作成
-- `htnblog edit {URL|@0|@1|…}` … 既存記事の編集
+- `htnblog edit {URL|@0|@1|…}` … 既存記事の編集。記事を指定しない場合は @0 = 最も最近に編集したページを対象とする
 - `htnblog publish {URL|@0|@1|…}` … 指定した記事を下書き状態から公開状態へ変更する
 
 ```./htnblog |
@@ -92,6 +92,7 @@ Usage: htnblog {options...} {init|list|new|type|edit}
   htnblog edit    {URL|@0|@1|..} ... edit the article
   htnblog delete  {URL|@0|@1|..} ... output the article to STDOUT and delete it
   htnblog publish {URL|@0|@1|..} ... set false the draft flag of the article
+
     The lines in the draft up to "---" are the header lines,
     and the rest is the article body.
 
