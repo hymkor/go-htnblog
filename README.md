@@ -103,7 +103,7 @@ Usage: htnblog {options...} {init|list|new|type|edit}
     	Enable Debug Output
   -f	Delete without prompt
   -n int
-    	fetch articles (default 100)
+    	fetch articles (default 10)
   -rc string
     	use the specified file instead of ~/.htnblog
 ```
