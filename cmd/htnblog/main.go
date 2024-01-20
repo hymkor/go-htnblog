@@ -8,7 +8,6 @@ import (
 	"io"
 	"net/url"
 	"os"
-	"path"
 	"path/filepath"
 	"runtime"
 	"strconv"
@@ -39,7 +38,7 @@ func list(blog *htnblog.Blog) error {
 	return blog.EachEntry(func(entry1 *htnblog.XmlEntry) bool {
 		fmt.Printf("@%d %s %s\n",
 			i,
-			url2id(entry1.EditUrl()),
+			entry1.EntryId(),
 			entry1.Title)
 		i++
 		return i < *flagMax
@@ -171,14 +170,6 @@ func editEntry1(blog *htnblog.Blog, entry *htnblog.XmlEntry) error {
 	return blog.DropResponse(res, err)
 }
 
-func url2id(url string) string {
-	index := strings.LastIndexByte(url, '/')
-	if index < 0 {
-		return ""
-	}
-	return url[index+1:]
-}
-
 func chooseEntry(blog *htnblog.Blog, args []string) (*htnblog.XmlEntry, error) {
 	if len(args) <= 0 {
 		entry := blog.Index(0)
@@ -210,7 +201,7 @@ func chooseEntry(blog *htnblog.Blog, args []string) (*htnblog.XmlEntry, error) {
 		})
 	} else {
 		err = blog.EachEntry(func(entry1 *htnblog.XmlEntry) bool {
-			id := url2id(entry1.EditUrl())
+			id := entry1.EntryId()
 			if id != "" && id == args[0] {
 				result = entry1
 				return false
@@ -298,7 +289,7 @@ func browseEntry(blog *htnblog.Blog, args []string) error {
 	if err != nil {
 		return err
 	}
-	entryId := path.Base(entry.EditUrl())
+	entryId := entry.EntryId()
 	theUrl, err := url.JoinPath(blog.EndPointUrl, "../edit")
 	if err != nil {
 		return err

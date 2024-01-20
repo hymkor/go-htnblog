@@ -2,6 +2,7 @@ package htnblog
 
 import (
 	"encoding/xml"
+	"strings"
 )
 
 type XmlEntry struct {
@@ -62,4 +63,13 @@ func (entry *XmlEntry) EditUrl() string {
 
 func (entry *XmlEntry) AlternateUrl() string {
 	return findLink("alternate", entry.Link)
+}
+
+func (entry *XmlEntry) EntryId() string {
+	url := entry.EditUrl()
+	index := strings.LastIndexByte(url, '/')
+	if index < 0 {
+		return ""
+	}
+	return url[index+1:]
 }
