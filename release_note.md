@@ -1,3 +1,5 @@
+- htnblog.exe: `Category: PowerShell Windows11` といった体裁でカテゴリーを編集できるようにした。
+
 v0.9.0
 ======
 (2024.01.20)
