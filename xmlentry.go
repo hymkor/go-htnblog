@@ -6,16 +6,22 @@ import (
 )
 
 type XmlEntry struct {
-	XMLName   xml.Name   `xml:"entry"`
-	XMLNs     string     `xml:"xmlns,attr"`
-	XMLNsApp  string     `xml:"xmlns:app,attr"`
-	Title     string     `xml:"title"`
-	Content   XmlContent `xml:"content"`
-	Link      []XmlLink  `xml:"link"`
-	Updated   string     `xml:"updated,omitempty"`
-	Published string     `xml:"published,omitempty"`
-	AppEdited string     `xml:"http://www.w3.org/2007/app edited,omitempty"`
-	Control   XmlControl `xml:"http://www.w3.org/2007/app control"`
+	XMLName   xml.Name       `xml:"entry"`
+	XMLNs     string         `xml:"xmlns,attr"`
+	XMLNsApp  string         `xml:"xmlns:app,attr"`
+	Title     string         `xml:"title"`
+	Content   XmlContent     `xml:"content"`
+	Link      []XmlLink      `xml:"link"`
+	Updated   string         `xml:"updated,omitempty"`
+	Published string         `xml:"published,omitempty"`
+	AppEdited string         `xml:"http://www.w3.org/2007/app edited,omitempty"`
+	Control   XmlControl     `xml:"http://www.w3.org/2007/app control"`
+	Category  []*XmlCategory `xml:"category"`
+}
+
+type XmlCategory struct {
+	XMLName xml.Name `xml:"category"`
+	Term    string   `xml:"term,attr"`
 }
 
 type XmlControl struct {

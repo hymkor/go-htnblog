@@ -121,6 +121,11 @@ func entryToDraft(entry *htnblog.XmlEntry) []byte {
 	fmt.Fprintln(&buffer, "Rem: Draft:", entry.Control.Draft)
 	fmt.Fprintln(&buffer, "Rem: Edit-Url:", entry.EditUrl())
 	fmt.Fprintln(&buffer, "Rem: Published:", entry.Published)
+	fmt.Fprint(&buffer, "Category:")
+	for _, c := range entry.Category {
+		fmt.Fprintf(&buffer, " %s", c.Term)
+	}
+	fmt.Fprintln(&buffer)
 	fmt.Fprintln(&buffer, "Updated:", entry.Updated)
 	fmt.Fprintln(&buffer, "Title:", entry.Title)
 	fmt.Fprintln(&buffer, "---")
@@ -140,6 +145,19 @@ func draftToEntry(draft []byte, entry *htnblog.XmlEntry) error {
 	entry.Title = header["title"]
 	entry.Updated = header["updated"]
 
+	category := header["category"]
+	entry.Category = make([]*htnblog.XmlCategory, 0, 4)
+	for {
+		var term string
+		term, category, _ = strings.Cut(category, " ")
+		if term != "" {
+			entry.Category = append(entry.Category,
+				&htnblog.XmlCategory{Term: term})
+		}
+		if category == "" {
+			break
+		}
+	}
 	entry.Content.Body = string(body)
 	return nil
 }
