@@ -19,8 +19,7 @@ go-htnblog：はてなブログ-クライアント
 
 ### インストール
 
-[Releases](https://github.com/hymkor/go-htnblog/releases)
-よりダウンロードして、実行ファイルを展開してください
+[Releases](https://github.com/hymkor/go-htnblog/releases) よりダウンロードして、環境変数 PATH で指定されたディレクトリに実行ファイル htnblog.exe を展開してください
 
 #### scoop インストーラーがある場合
 
