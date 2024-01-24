@@ -45,14 +45,10 @@ func askYesNoEdit() (rune, error) {
 
 func whichEditor() string {
 	json1, err := config()
-	if err == nil && json1.Editor != "" {
-		return json1.Editor
-	}
-	editor, ok := os.LookupEnv("EDITOR")
-	if !ok {
+	if err != nil {
 		return ""
 	}
-	return editor
+	return json1.Editor
 }
 
 func callEditor(draft []byte) ([]byte, error) {
