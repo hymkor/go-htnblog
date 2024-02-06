@@ -2,6 +2,8 @@ package htnblog
 
 import (
 	"encoding/xml"
+	"errors"
+	"net/url"
 	"strings"
 )
 
@@ -78,4 +80,16 @@ func (entry *XmlEntry) EntryId() string {
 		return ""
 	}
 	return url[index+1:]
+}
+
+func (entry *XmlEntry) UrlForBrowserToEdit() (string, error) {
+	atomUrl := entry.EditUrl()
+	if atomUrl == "" {
+		return "", errors.New("Edit URL not found")
+	}
+	browseUrl, err := url.JoinPath(atomUrl, "../../../edit")
+	if err != nil {
+		return "", err
+	}
+	return browseUrl + "?entry=" + entry.EntryId(), nil
 }
