@@ -1,4 +1,9 @@
-- htnblog.exe: `Category: PowerShell Windows11` といった体裁でカテゴリーを編集できるようにした。
+- htnblog.exe:
+    - `Category: PowerShell Windows11` といった体裁でカテゴリーを編集できるようにした。
+    - `new`,`edit`: 終了前に編集用URL、表示URLを表示するようにした
+- go-htnblog:
+    - `(*XmlEntry) UrlForBrowserToEdit` を追加
+    - `(*XmlEntry) EditUrl` を `UrlToEdit` に改名 (旧名は残しているが Deprecated )
 
 v0.9.0
 ======
