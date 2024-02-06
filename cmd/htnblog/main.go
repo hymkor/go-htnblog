@@ -2,10 +2,12 @@ package main
 
 import (
 	"bytes"
+	"encoding/xml"
 	"errors"
 	"flag"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -64,6 +66,29 @@ func askYesNo() (bool, error) {
 	return key == "y" || key == "Y", nil
 }
 
+func reportUrls(res *http.Response, err error) error {
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+	bin, err := io.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
+	var entry htnblog.XmlEntry
+	err = xml.Unmarshal(bin, &entry)
+	if err != nil {
+		return err
+	}
+	if url, err := entry.UrlForBrowserToEdit(); err == nil {
+		fmt.Fprintln(os.Stderr, "UrlToEdit:", url)
+	}
+	if url := entry.AlternateUrl(); url != "" {
+		fmt.Fprintln(os.Stderr, "Alternate-Url:", url)
+	}
+	return nil
+}
+
 func newEntry(blog *htnblog.Blog) error {
 	draft, err := callEditor([]byte("Title: \n---\n\n"))
 	if err != nil {
@@ -78,7 +103,7 @@ func newEntry(blog *htnblog.Blog) error {
 	if res != nil {
 		fmt.Fprintln(os.Stderr, res.Status)
 	}
-	return blog.DropResponse(res, err)
+	return reportUrls(res, err)
 }
 
 func chomp(text []byte) []byte {
@@ -184,7 +209,7 @@ func editEntry1(blog *htnblog.Blog, entry *htnblog.XmlEntry) error {
 	if res != nil {
 		fmt.Fprintln(os.Stderr, res.Status)
 	}
-	return blog.DropResponse(res, err)
+	return reportUrls(res, err)
 }
 
 func chooseEntry(blog *htnblog.Blog, args []string) (*htnblog.XmlEntry, error) {
