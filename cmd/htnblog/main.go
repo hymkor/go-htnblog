@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"net/url"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -307,12 +306,11 @@ func browseEntry(blog *htnblog.Blog, args []string) error {
 	if err != nil {
 		return err
 	}
-	entryId := entry.EntryId()
-	theUrl, err := url.JoinPath(blog.EndPointUrl, "../edit")
+	url, err := entry.UrlForBrowserToEdit()
 	if err != nil {
 		return err
 	}
-	return webbrowser.Open(theUrl + "?entry=" + entryId)
+	return webbrowser.Open(url)
 }
 
 var version string
