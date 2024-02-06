@@ -65,10 +65,14 @@ func findLink(rel string, links []XmlLink) string {
 	return ""
 }
 
+// Deprecated: use UrlToEdit instead
 func (entry *XmlEntry) EditUrl() string {
 	return findLink("edit", entry.Link)
 }
 
+func (entry *XmlEntry) UrlToEdit() string {
+	return findLink("edit", entry.Link)
+}
 func (entry *XmlEntry) AlternateUrl() string {
 	return findLink("alternate", entry.Link)
 }

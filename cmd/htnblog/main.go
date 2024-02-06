@@ -143,7 +143,7 @@ func entryToDraft(entry *htnblog.XmlEntry) []byte {
 	fmt.Fprintln(&buffer, "Rem: Alternate-Url:", entry.AlternateUrl())
 	fmt.Fprintln(&buffer, "Rem: App-Edited:", entry.AppEdited)
 	fmt.Fprintln(&buffer, "Rem: Draft:", entry.Control.Draft)
-	fmt.Fprintln(&buffer, "Rem: Edit-Url:", entry.EditUrl())
+	fmt.Fprintln(&buffer, "Rem: Url-To-Edit:", entry.UrlToEdit())
 	fmt.Fprintln(&buffer, "Rem: Published:", entry.Published)
 	fmt.Fprint(&buffer, "Category:")
 	for _, c := range entry.Category {
