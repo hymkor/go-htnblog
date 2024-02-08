@@ -1,3 +1,9 @@
+- htnblog.exe:
+    - `htnblog new` で Category: ヘッダーが認識されない問題を修正
+    - `-debug` オプションが機能しなくなっている問題を修正
+- go-htnblog:
+    - 新規エントリ追加用で、Category フィールドなども指定ができる `(*Blog) Add` を追加
+
 v1.0.0
 ======
 (2024.02.08)
