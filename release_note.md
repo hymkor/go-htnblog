@@ -1,3 +1,7 @@
+v1.0.0
+======
+(2024.02.08)
+
 - htnblog.exe:
     - `Category: PowerShell Windows11` といった体裁でカテゴリーを編集できるようにした。
     - `new`,`edit`: 終了前に編集用URL、表示URLを表示するようにした
