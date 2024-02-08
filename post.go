@@ -71,6 +71,16 @@ func (B *Blog) Post(title, content, isDraft string) (*http.Response, error) {
 			Draft: isDraft,
 		},
 	}
+	return B.Add(entry)
+}
+
+func (B *Blog) Add(entry *XmlEntry) (*http.Response, error) {
+	if entry.Content.Type == "" {
+		entry.Content.Type = "text/plain"
+	}
+	if entry.Control.Draft == "" {
+		entry.Control.Draft = "yes"
+	}
 	output, err := entry.Marshal()
 	if err != nil {
 		return nil, fmt.Errorf("Marshal: %w", err)
