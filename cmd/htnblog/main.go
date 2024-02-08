@@ -75,6 +75,9 @@ func reportUrls(res *http.Response, err error) error {
 	if err != nil {
 		return err
 	}
+	if *flagDebug {
+		os.Stderr.Write(bin)
+	}
 	var entry htnblog.XmlEntry
 	err = xml.Unmarshal(bin, &entry)
 	if err != nil {
