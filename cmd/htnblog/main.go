@@ -93,16 +93,18 @@ func reportUrls(res *http.Response, err error) error {
 }
 
 func newEntry(blog *htnblog.Blog) error {
-	draft, err := callEditor([]byte("Title: \n---\n\n"))
+	draft, err := callEditor([]byte("Category: \nTitle: \n---\n\n"))
 	if err != nil {
 		return err
 	}
 	if len(bytes.TrimSpace(draft)) == 0 {
 		return errors.New("your draft is empty. Posting is canceled")
 	}
-	header, body := splitHeaderAndBody(draft)
-	title := header["title"]
-	res, err := blog.Post(title, strings.TrimSpace(string(body)), "yes")
+	var entry htnblog.XmlEntry
+	if err := draftToEntry(draft, &entry); err != nil {
+		return err
+	}
+	res, err := blog.Add(&entry)
 	if res != nil {
 		fmt.Fprintln(os.Stderr, res.Status)
 	}
