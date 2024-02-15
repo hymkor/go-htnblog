@@ -37,9 +37,14 @@ var (
 func list(blog *htnblog.Blog) error {
 	i := 0
 	return blog.EachEntry(func(entry1 *htnblog.XmlEntry) bool {
-		fmt.Printf("@%d %s %s\n",
+		draft := ""
+		if strings.EqualFold(entry1.Control.Draft, "yes") {
+			draft = "<draft> "
+		}
+		fmt.Printf("@%d %s %s%s\n",
 			i,
 			entry1.EntryId(),
+			draft,
 			entry1.Title)
 		i++
 		return i < *flagMax
