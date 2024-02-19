@@ -1,5 +1,6 @@
 - htnblog.exe:
     - `htnblog list`: ドラフト記事にはタイトル前に \<draft\> と付けるようにした
+    - `htnblog new/edit`: 同じカテゴリ名を重複して登録してしまう不具合を修正
 
 v1.0.1
 ======
