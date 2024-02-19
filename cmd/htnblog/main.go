@@ -181,12 +181,17 @@ func draftToEntry(draft []byte, entry *htnblog.XmlEntry) error {
 
 	category := header["category"]
 	entry.Category = make([]*htnblog.XmlCategory, 0, 4)
+	already := make(map[string]struct{})
 	for {
 		var term string
 		term, category, _ = strings.Cut(category, " ")
 		if term != "" {
-			entry.Category = append(entry.Category,
-				&htnblog.XmlCategory{Term: term})
+			termL := strings.ToLower(term)
+			if _, ok := already[termL]; !ok {
+				entry.Category = append(entry.Category,
+					&htnblog.XmlCategory{Term: term})
+				already[termL] = struct{}{}
+			}
 		}
 		if category == "" {
 			break
