@@ -36,7 +36,11 @@ var (
 
 func list(blog *htnblog.Blog) error {
 	i := 0
-	return blog.EachEntry(func(entry1 *htnblog.XmlEntry) bool {
+	iter, err := blog.Iterator()
+	if err != nil {
+		return err
+	}
+	for entry1 := range iter {
 		draft := ""
 		if strings.EqualFold(entry1.Control.Draft, "yes") {
 			draft = "<draft> "
@@ -47,8 +51,11 @@ func list(blog *htnblog.Blog) error {
 			draft,
 			entry1.Title)
 		i++
-		return i < *flagMax
-	})
+		if i >= *flagMax {
+			break
+		}
+	}
+	return nil
 }
 
 func askYesNo() (bool, error) {
@@ -245,30 +252,24 @@ func chooseEntry(blog *htnblog.Blog, args []string) (*htnblog.XmlEntry, error) {
 		}
 	}
 	var result *htnblog.XmlEntry
-	var err error
-
-	if strings.HasPrefix(args[0], "http") {
-		err = blog.EachEntry(func(entry1 *htnblog.XmlEntry) bool {
-			url := entry1.AlternateUrl()
-			if url != "" && url == args[0] {
-				result = entry1
-				return false
-			}
-			return true
-		})
-	} else {
-		err = blog.EachEntry(func(entry1 *htnblog.XmlEntry) bool {
-			id := entry1.EntryId()
-			if id != "" && id == args[0] {
-				result = entry1
-				return false
-			}
-			return true
-		})
-	}
-
+	iter, err := blog.Iterator()
 	if err != nil {
 		return nil, err
+	}
+	if strings.HasPrefix(args[0], "http") {
+		for entry1 := range iter {
+			url := entry1.AlternateUrl()
+			if url != "" && url == args[0] {
+				return entry1, nil
+			}
+		}
+	} else {
+		for entry1 := range iter {
+			id := entry1.EntryId()
+			if id != "" && id == args[0] {
+				return entry1, nil
+			}
+		}
 	}
 	if result == nil {
 		return nil, fmt.Errorf("%s: entry not found", args[0])
