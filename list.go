@@ -68,6 +68,21 @@ func (B *Blog) List() ([]*XmlEntry, error) {
 	}
 }
 
+func (B *Blog) Iterator() (func(func(*XmlEntry) bool), error) {
+	f, err := B.listFirst()
+	if err != nil {
+		return nil, err
+	}
+	return func(yield func(*XmlEntry) bool) {
+		for _, entry := range f.Entry {
+			if !yield(entry) {
+				break
+			}
+		}
+		f, err = f.listNext()
+	}, nil
+}
+
 func (B *Blog) EachEntry(callback func(*XmlEntry) bool) error {
 	f, err := B.listFirst()
 	for err == nil {
