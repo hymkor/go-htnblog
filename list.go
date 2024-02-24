@@ -83,6 +83,7 @@ func (B *Blog) Iterator() (func(func(*XmlEntry) bool), error) {
 	}, nil
 }
 
+// Deprecated: use Iterator()
 func (B *Blog) EachEntry(callback func(*XmlEntry) bool) error {
 	f, err := B.listFirst()
 	for err == nil {
