@@ -16,9 +16,15 @@ go-htnblog：はてなブログ-クライアント
 コマンドラインクライアント
 --------------------------
 
-### インストール
+### 手作業でインストール
 
 [Releases](https://github.com/hymkor/go-htnblog/releases) よりダウンロードして、環境変数 PATH で指定されたディレクトリに実行ファイル htnblog.exe を展開してください
+
+#### Go一式がある場合
+
+```
+go install github.com/hymkor/go-htnblog/cmd/htnblog@latest
+```
 
 #### scoop インストーラーがある場合
 
