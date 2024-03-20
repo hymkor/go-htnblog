@@ -41,14 +41,21 @@ func list(blog *htnblog.Blog) error {
 		return err
 	}
 	for entry1 := range iter {
-		draft := ""
+		var prefix strings.Builder
 		if strings.EqualFold(entry1.Control.Draft, "yes") {
-			draft = "<draft> "
+			prefix.WriteString("<draft> ")
 		}
+		if len(entry1.Category) > 0 {
+			for _, category := range entry1.Category {
+				fmt.Fprintf(&prefix, "[%s]", category.Term)
+			}
+			prefix.WriteByte(' ')
+		}
+
 		fmt.Printf("@%d %s %s%s\n",
 			i,
 			entry1.EntryId(),
-			draft,
+			prefix.String(),
 			entry1.Title)
 		i++
 		if i >= *flagMax {
