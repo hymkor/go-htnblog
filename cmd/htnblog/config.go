@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -14,6 +13,7 @@ import (
 	"github.com/nyaosorg/go-readline-ny"
 
 	"github.com/hymkor/go-htnblog/internal/defaulteditor"
+	"github.com/hymkor/go-htnblog/internal/flag"
 )
 
 var (

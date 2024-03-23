@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/xml"
 	"errors"
-	"flag"
 	"fmt"
 	"io"
 	"net/http"
@@ -23,6 +22,7 @@ import (
 	"github.com/hymkor/go-windows1x-virtualterminal"
 
 	"github.com/hymkor/go-htnblog"
+	"github.com/hymkor/go-htnblog/internal/flag"
 )
 
 var (
