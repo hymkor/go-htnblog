@@ -133,6 +133,22 @@ func newEntry(blog *htnblog.Blog) error {
 	return reportUrls(res, err)
 }
 
+func fromStdin(blog *htnblog.Blog) error {
+	draft, err := io.ReadAll(os.Stdin)
+	if err != nil {
+		return err
+	}
+	var entry htnblog.XmlEntry
+	if err := draftToEntry(draft, &entry); err != nil {
+		return err
+	}
+	res, err := blog.Add(&entry)
+	if res != nil {
+		fmt.Fprintln(os.Stderr, res.Status)
+	}
+	return reportUrls(res, err)
+}
+
 func chomp(text []byte) []byte {
 	if len(text) > 0 && text[len(text)-1] == '\n' {
 		text = text[:len(text)-1]
@@ -434,6 +450,8 @@ Usage: htnblog {options...} {init|list|new|type|edit}
 		return list(blog)
 	case "new":
 		return newEntry(blog)
+	case "from-stdin":
+		return fromStdin(blog)
 	case "edit":
 		return editEntry(blog, args[1:])
 	case "type":
