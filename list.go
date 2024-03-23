@@ -74,12 +74,17 @@ func (B *Blog) Iterator() (func(func(*XmlEntry) bool), error) {
 		return nil, err
 	}
 	return func(yield func(*XmlEntry) bool) {
-		for _, entry := range f.Entry {
-			if !yield(entry) {
-				break
+		for {
+			for _, entry := range f.Entry {
+				if !yield(entry) {
+					return
+				}
+			}
+			f, err = f.listNext()
+			if err != nil {
+				return
 			}
 		}
-		f, err = f.listNext()
 	}, nil
 }
 
