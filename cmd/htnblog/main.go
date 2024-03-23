@@ -112,7 +112,10 @@ func reportUrls(res *http.Response, err error) error {
 }
 
 func newEntry(blog *htnblog.Blog) error {
-	draft, err := callEditor([]byte("Category: \nTitle: \n---\n\n"))
+	var buffer bytes.Buffer
+	fmt.Fprintln(&buffer, "Rem: EndPointUrl:", blog.EndPointUrl)
+	buffer.WriteString("Category: \nTitle: \n---\n\n")
+	draft, err := callEditor(buffer.Bytes())
 	if err != nil {
 		return err
 	}
