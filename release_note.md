@@ -1,5 +1,7 @@
-- オプション引数を非オプション引数の後にも置けるようにした。  
-  (例) `htnblog -n 10 list` を `htnblog list -n 10` と書くことが可能
+- htnblog.exe:
+    - オプション引数を非オプション引数の後にも置けるようにした。  
+      (例) `htnblog -n 10 list` を `htnblog list -n 10` と書くことが可能
+    - `htnblog new`: ドラフトのコメント欄に End-Point-URL を挿入するようにした
 
 v1.0.4
 ======
