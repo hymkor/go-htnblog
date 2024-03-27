@@ -2,6 +2,8 @@
     - オプション引数を非オプション引数の後にも置けるようにした。  
       (例) `htnblog -n 10 list` を `htnblog list -n 10` と書くことが可能
     - `htnblog new`: ドラフトのコメント欄に End-Point-URL を挿入するようにした
+    - `htnblog from-stdin`: 標準入力から新しい記事を読み込むサブコマンドを用意した  
+      (フォーマットは `htnblog new` で表示されるものと同じ)
 
 v1.0.4
 ======
