@@ -4,6 +4,7 @@
     - `htnblog new`: ドラフトのコメント欄に End-Point-URL を挿入するようにした
     - `htnblog from-stdin`: 標準入力から新しい記事を読み込むサブコマンドを用意した  
       (フォーマットは `htnblog new` で表示されるものと同じ)
+    - エディター設定に `"C:/Program Files/vim/vim91/vim.exe" --literal` など空白・二重引用符・オプションを含められるようにした。
 
 v1.0.4
 ======
