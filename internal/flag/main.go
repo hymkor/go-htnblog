@@ -200,30 +200,30 @@ func (f *FlagSet) Parse(args []string) error {
 	return nil
 }
 
-var globalFlag FlagSet
+var CommandLine FlagSet
 
 func String(name, defaults, usage string) *string {
-	return globalFlag.String(name, defaults, usage)
+	return CommandLine.String(name, defaults, usage)
 }
 
 func Bool(name string, defaults bool, usage string) *bool {
-	return globalFlag.Bool(name, defaults, usage)
+	return CommandLine.Bool(name, defaults, usage)
 }
 
 func Int(name string, defaults int, usage string) *int {
-	return globalFlag.Int(name, defaults, usage)
+	return CommandLine.Int(name, defaults, usage)
 }
 
 func Args() []string {
-	return globalFlag.Args()
+	return CommandLine.Args()
 }
 
 func PrintDefaults() {
-	globalFlag.PrintDefaults()
+	CommandLine.PrintDefaults()
 }
 
 func Parse() {
-	err := globalFlag.Parse(os.Args[1:])
+	err := CommandLine.Parse(os.Args[1:])
 	if err == nil {
 		return
 	}
