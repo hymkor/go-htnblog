@@ -424,6 +424,8 @@ Usage: htnblog {options...} {init|list|new|type|edit}
   htnblog delete  {URL|@0|@1|..} ... output the article to STDOUT and delete it
   htnblog publish {URL|@0|@1|..} ... set false the draft flag of the article
   htnblog browse  {URL|@0|@1|..} ... open the edit page in a web browser
+  htnblog export                 ... export all articles
+                                       as "./entry-YYYY-MM-DD-NNNNNN.md"
 
     The lines in the draft up to "---" are the header lines,
     and the rest is the article body.
