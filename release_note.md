@@ -1,3 +1,5 @@
+- GitHub のレポジトリ名を `go-htnblog` から`htnblog-go` へ変更
+    - 実行ファイル名は変更なし
 - htnblog.exe:
     - 全エントリを `entry-YYYY-MM-DD-NNNNNN.md` 形式でバックアップするサブコマンド `export` を追加
         - ローカルのカレントディレクトリにすべて生成される点に注意
