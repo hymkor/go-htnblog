@@ -1,3 +1,7 @@
+v1.2.0
+======
+(2025.09.17)
+
 - GitHub のレポジトリ名を `go-htnblog` から`htnblog-go` へ変更
     - 実行ファイル名は変更なし
 - htnblog.exe:
