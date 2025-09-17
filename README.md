@@ -1,16 +1,18 @@
-go-htnblog：はてなブログ-クライアント
+htnblog-go：はてなブログ-クライアント
 ====================================
 
-[![GoDev](https://pkg.go.dev/badge/github.com/hymkor/go-htnblog)](https://pkg.go.dev/github.com/hymkor/go-htnblog)
+[![GoDev](https://pkg.go.dev/badge/github.com/hymkor/htnblog-go)](https://pkg.go.dev/github.com/hymkor/htnblog-go)
 
 本パッケージは
 
 - コマンドラインクライアント(htnblog.exe, htnblog)  
     → シェル、コマンドプロンプトなどから利用。vim など任意のテキストエディターで記事を編集して、投稿
-- クライアントライブラリ(github.com/hymkor/go-htnblog)  
+- クライアントライブラリ(github.com/hymkor/htnblog-go)  
     → Go言語で投稿機能を利用できるライブラリ
 
 からなります。Windows, Linux (Ubuntu on WSL) で動作を確認しています
+
+※ 2025.09.17 GitHubレポジトリ名、Goのパッケージ名を `go-htnblog` から`htnblog-go` へ変更しましたが、実行ファイル名ほかは特に変更ありません。ライブラリとしての利用はほとんどなく、主に実行ファイルの利用がメインになっているのに、名前の頭に `go-` がのっかってるのがすわりが悪くて、変えてしまいました。
 
 
 コマンドラインクライアント
@@ -18,18 +20,18 @@ go-htnblog：はてなブログ-クライアント
 
 ### 手作業でインストール
 
-[Releases](https://github.com/hymkor/go-htnblog/releases) よりダウンロードして、環境変数 PATH で指定されたディレクトリに実行ファイル htnblog.exe を展開してください
+[Releases](https://github.com/hymkor/htnblog-go/releases) よりダウンロードして、環境変数 PATH で指定されたディレクトリに実行ファイル htnblog.exe を展開してください
 
 #### Go一式がある場合
 
 ```
-go install github.com/hymkor/go-htnblog/cmd/htnblog@latest
+go install github.com/hymkor/htnblog-go/cmd/htnblog@latest
 ```
 
 #### scoop インストーラーがある場合
 
 ```
-scoop install https://raw.githubusercontent.com/hymkor/go-htnblog/master/htnblog.json
+scoop install https://raw.githubusercontent.com/hymkor/htnblog-go/master/htnblog.json
 ```
 
 もしくは
@@ -85,9 +87,10 @@ Saved configuration to C:\Users\hymkor\.htnblog
 - `htnblog edit {URL|@0|@1|…}` … 既存記事の編集。記事を指定しない場合は @0 = 最も最近に編集したページを対象とする
 - `htnblog publish {URL|@0|@1|…}` … 指定した記事を下書き状態から公開状態へ変更する
 - `htnblog browse {URL|@0|@1|…}` … 指定した記事の編集ページをウェブブラウザで開く
+- `htnblog export` 
 
 ```./htnblog |
-htnblog v0.8.0-11-g70fa80c-windows-amd64 by go1.21.5
+htnblog v1.1.0-9-ga4262d3-windows-amd64 by go1.25.1
 
 Usage: htnblog {options...} {init|list|new|type|edit}
   htnblog init                   ... edit configuration
@@ -98,10 +101,13 @@ Usage: htnblog {options...} {init|list|new|type|edit}
   htnblog delete  {URL|@0|@1|..} ... output the article to STDOUT and delete it
   htnblog publish {URL|@0|@1|..} ... set false the draft flag of the article
   htnblog browse  {URL|@0|@1|..} ... open the edit page in a web browser
+  htnblog export                 ... export all articles
+                                       as "./entry-YYYY-MM-DD-NNNNNN.md"
 
     The lines in the draft up to "---" are the header lines,
     and the rest is the article body.
 
+Usage of ./htnblog:
   -1	Use the value of "endpointurl1" in the JSON setting
   -2	Use the value of "endpointurl2" in the JSON setting
   -3	Use the value of "endpointurl3" in the JSON setting
@@ -114,7 +120,7 @@ Usage: htnblog {options...} {init|list|new|type|edit}
     	use the specified file instead of ~/.htnblog
 ```
 
-Goライブラリ go-htnblog
+Goライブラリ htnblog-go
 ------------------------
 
 ### 使用例: 一覧表示
@@ -131,7 +137,7 @@ import (
     "io"
     "os"
 
-    "github.com/hymkor/go-htnblog"
+    "github.com/hymkor/htnblog-go"
 )
 
 func list() error {
@@ -180,7 +186,7 @@ import (
     "os"
     "time"
 
-    "github.com/hymkor/go-htnblog"
+    "github.com/hymkor/htnblog-go"
 )
 
 func post() error {
@@ -220,7 +226,7 @@ import (
     "os"
     "time"
 
-    "github.com/hymkor/go-htnblog"
+    "github.com/hymkor/htnblog-go"
 )
 
 func edit() error {
