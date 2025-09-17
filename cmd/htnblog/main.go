@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -320,6 +321,31 @@ func typeEntry(blog *htnblog.Blog, args []string) error {
 	return nil
 }
 
+func exportEntry(blog *htnblog.Blog, args []string) error {
+	iter, err := blog.Iterator()
+	if err != nil {
+		return err
+	}
+	for entry := range iter {
+		alternateUrl := entry.AlternateUrl()
+		url1, err := url.Parse(alternateUrl)
+		if err != nil {
+			return err
+		}
+		path1 := url1.Path
+		path1 = strings.TrimLeft(path1, "/")
+		path1 = strings.ReplaceAll(path1, "/", "-")
+		path1 = path1 + ".md"
+		draft := entryToDraft(entry)
+		fmt.Fprintln(os.Stderr, path1)
+		err = os.WriteFile(path1, draft, 0666)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func publishEntry(blog *htnblog.Blog, args []string) error {
 	entry, err := chooseEntry(blog, args)
 	if err != nil {
@@ -464,6 +490,8 @@ Usage: htnblog {options...} {init|list|new|type|edit}
 		return unpublishEntry(blog, args[1:])
 	case "browse":
 		return browseEntry(blog, args[1:])
+	case "export":
+		return exportEntry(blog, args[1:])
 	default:
 		return fmt.Errorf("%s: no such subcommand", args[0])
 	}
