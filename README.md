@@ -87,7 +87,7 @@ Saved configuration to C:\Users\hymkor\.htnblog
 - `htnblog edit {URL|@0|@1|…}` … 既存記事の編集。記事を指定しない場合は @0 = 最も最近に編集したページを対象とする
 - `htnblog publish {URL|@0|@1|…}` … 指定した記事を下書き状態から公開状態へ変更する
 - `htnblog browse {URL|@0|@1|…}` … 指定した記事の編集ページをウェブブラウザで開く
-- `htnblog export` 
+- `htnblog export` ... 全記事をカレントディレクトリに entry-YYYY-MM-DD-NNNNNN.md 形式でバックアップする
 
 ```./htnblog |
 htnblog v1.1.0-9-ga4262d3-windows-amd64 by go1.25.1
