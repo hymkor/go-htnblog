@@ -41,4 +41,7 @@ manifest:
 release:
 	goawk -f latest-notes.awk release_note*.md | gh release create -d --notes-file - -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
 
-.PHONY: all test dist _dist clean manifest release
+docs:
+	minipage -title "htnblog-go: HATENA-BLOG Client" -readme-to-index README.md > docs/index.html
+
+.PHONY: all test dist _dist clean manifest release docs
