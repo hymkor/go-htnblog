@@ -1,6 +1,6 @@
 module github.com/hymkor/go-htnblog
 
-go 1.21.3
+go 1.23
 
 require (
 	github.com/hymkor/go-windows1x-virtualterminal v0.3.0
