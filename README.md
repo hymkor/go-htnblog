@@ -78,7 +78,7 @@ Saved configuration to C:\Users\hymkor\.htnblog
 
 ### 使い方
 
-[cmd/htnblog/main.go](cmd/htnblog/main.go)
+[cmd/htnblog/main.go](https://github.com/hymkor/htnblog-go/blob/master/cmd/htnblog/main.go)
 
 - `htnblog` (オプションなし) … ヘルプ
 - `htnblog init` … 設定の編集
@@ -125,7 +125,7 @@ Goライブラリ htnblog-go
 
 ### 使用例: 一覧表示
 
-[examples/list.go](examples/list.go)
+[examples/list.go](https://github.com/hymkor/htnblog-go/blob/master/examples/list.go)
 
 設定は標準入力から読み込むようにしてます。ブログに投稿するためのアカウント情報を保持する htnblog.Blog型のインスタンスは `htnblog.NewFromJSON` 関数で JSON テキストから生成していますが、別に `&Blog{...}` でいきなり生成しても構いません。
 
@@ -170,7 +170,7 @@ func main() {
 
 ### 使用例: 新規投稿
 
-[examples/post.go](examples/post.go)
+[examples/post.go](https://github.com/hymkor/htnblog-go/blob/master/examples/post.go)
 
 `(*Blog) Post` 関数は戻り値としてウェブアクセスの返信を `*http.Response` と `error` で返してきます。エラーでない場合は `*https.Response` の Body という io.Reader を全部読みとって、Close しなければいけないのですが、それらはエラーの判断も含めて `(*Blog).DropResponse` というメソッドに委ねています。同メソッドでは通常は読み取ったデータを io.Discard に捨てていますが、DebugPrint という io.Writer のフィールドが nil でない場合はそちらへコピーします
 ( つまり例では標準エラー出力にサーバーのレスポンスを表示させています )
@@ -212,7 +212,7 @@ func main() {
 
 ### 使用例: 最も新しい記事を編集
 
-[examples/edit.go](examples/edit.go)
+[examples/edit.go](https://github.com/hymkor/htnblog-go/blob/master/examples/edit.go)
 
 `$ go run examples/edit.go < ~/.htnblog`
 
