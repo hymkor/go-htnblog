@@ -1,4 +1,4 @@
-module github.com/hymkor/go-htnblog
+module github.com/hymkor/htnblog-go
 
 go 1.23
 

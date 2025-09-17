@@ -22,8 +22,8 @@ import (
 
 	"github.com/hymkor/go-windows1x-virtualterminal"
 
-	"github.com/hymkor/go-htnblog"
-	"github.com/hymkor/go-htnblog/internal/flag"
+	"github.com/hymkor/htnblog-go"
+	"github.com/hymkor/htnblog-go/internal/flag"
 )
 
 var (

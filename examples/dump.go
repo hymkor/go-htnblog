@@ -7,7 +7,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/hymkor/go-htnblog"
+	"github.com/hymkor/htnblog-go"
 )
 
 func dump() error {

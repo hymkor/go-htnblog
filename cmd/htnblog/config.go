@@ -12,8 +12,8 @@ import (
 
 	"github.com/nyaosorg/go-readline-ny"
 
-	"github.com/hymkor/go-htnblog/internal/defaulteditor"
-	"github.com/hymkor/go-htnblog/internal/flag"
+	"github.com/hymkor/htnblog-go/internal/defaulteditor"
+	"github.com/hymkor/htnblog-go/internal/flag"
 )
 
 var (

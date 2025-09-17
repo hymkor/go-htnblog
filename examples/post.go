@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/hymkor/go-htnblog"
+	"github.com/hymkor/htnblog-go"
 )
 
 func post() error {
