@@ -41,53 +41,14 @@ scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
 scoop install htnblog
 ```
 
-### 設定
-
-`htnblog init` を実行してください。
-
-```
-$ htnblog init
-Hatena-id ? (← Hatena-IDを入力)
-API-KEY ? (← APIキー入力)
-End Point URL 1 ? (← 一つ目のブログのEndPointURL を入力)
-End Point URL 2 ? (← 二つ目のブログのEndPointURL を入力:Enterのみで省略可)
-End Point URL 3 ? (← 三つめのブログのEndPointURL を入力:Enterのみで省略可)
-End Point URL (default) ? (← デフォルトのブログの EndPointURL: 既定値は1と同じ)
-Text Editor Path ? (← テキストエディタのパス: 既定値は%EDITOR%)
-Saved configuration to C:\Users\hymkor\.htnblog
-```
-
-設定は ~/.htnblog というファイルに次のように保存されます。
-
-```
-{
-    "userid":"(YOUR_HATENA_ID)",
-    "endpointurl":"(END_POINT_URL)",
-    "apikey":"(YOUR API KEY)",
-    "editor":"(YOUR EDITOR FULLPATH))"
-    "endpointurl1":"(END_POINT_URL at option `-1`)",
-    "endpointurl2":"(END_POINT_URL at option `-2`)",
-    "endpointurl3":"(END_POINT_URL at option `-3`)",
-}
-```
-
-- **endpointurl** は 「はてな」の「ダッシュボード」 → (ブログ名) → 「設定」 → 詳細設定 → 「AtomPub」セクションのルートネンドポイントの記載の URL になります。
-- **apikey** は「アカウント設定」→「APIキー」に記載されています。
-- **editor** は編集に使うテキストエディターのパスを記載してください。
-- **endpointurl[123]** は **endpointurl** と同じですが、オプション -1,-2,-3 が指定された時にこちらが使われます。
 
 ### 使い方
 
 [cmd/htnblog/main.go](https://github.com/hymkor/htnblog-go/blob/master/cmd/htnblog/main.go)
 
-- `htnblog` (オプションなし) … ヘルプ
-- `htnblog init` … 設定の編集
-- `htnblog list` … 直近10件の記事のリスト
-- `htnblog new` … 新規記事のドラフトを作成
-- `htnblog edit {URL|@0|@1|…}` … 既存記事の編集。記事を指定しない場合は @0 = 最も最近に編集したページを対象とする
-- `htnblog publish {URL|@0|@1|…}` … 指定した記事を下書き状態から公開状態へ変更する
-- `htnblog browse {URL|@0|@1|…}` … 指定した記事の編集ページをウェブブラウザで開く
-- `htnblog export` ... 全記事をカレントディレクトリに entry-YYYY-MM-DD-NNNNNN.md 形式でバックアップする
+#### htnblog (オプションなし)
+
+ヘルプを表示します
 
 ```./htnblog |
 htnblog v1.1.0-9-ga4262d3-windows-amd64 by go1.25.1
@@ -119,6 +80,68 @@ Usage of ./htnblog:
   -rc string
     	use the specified file instead of ~/.htnblog
 ```
+
+#### htnblog init
+
+設定を編集します。
+
+```
+$ htnblog init
+Hatena-id ? (← Hatena-IDを入力)
+API-KEY ? (← APIキー入力)
+End Point URL 1 ? (← 一つ目のブログのEndPointURL を入力)
+End Point URL 2 ? (← 二つ目のブログのEndPointURL を入力:Enterのみで省略可)
+End Point URL 3 ? (← 三つめのブログのEndPointURL を入力:Enterのみで省略可)
+End Point URL (default) ? (← デフォルトのブログの EndPointURL: 既定値は1と同じ)
+Text Editor Path ? (← テキストエディタのパス: 既定値は%EDITOR%)
+Saved configuration to C:\Users\hymkor\.htnblog
+```
+
+設定は ~/.htnblog というファイルに次のように保存されます。
+
+```json
+{
+    "userid":"(YOUR_HATENA_ID)",
+    "endpointurl":"(END_POINT_URL)",
+    "apikey":"(YOUR API KEY)",
+    "editor":"(YOUR EDITOR FULLPATH))"
+    "endpointurl1":"(END_POINT_URL at option `-1`)",
+    "endpointurl2":"(END_POINT_URL at option `-2`)",
+    "endpointurl3":"(END_POINT_URL at option `-3`)",
+}
+```
+
+- **endpointurl** は 「はてな」の「ダッシュボード」 → (ブログ名) → 「設定」 → 詳細設定 → 「AtomPub」セクションのルートネンドポイントの記載の URL になります。
+- **apikey** は「アカウント設定」→「APIキー」に記載されています。
+- **editor** は編集に使うテキストエディターのパスを記載してください。
+- **endpointurl[123]** は **endpointurl** と同じですが、オプション -1,-2,-3 が指定された時にこちらが使われます。
+
+#### htnblog list
+
+直近10件の記事のリストを表示します。
+
+#### htnblog new
+
+新規記事のドラフトを作成します。テキストエディターが起動します。
+
+エディターを終了すると、`Are you sure to post ? (y/n/edit):` というプロンプトが表示されます。`y` で投稿実行、`n` はドラフトを破棄、`e` で編集しなおしとなります。
+
+#### htnblog edit {URL|@0|@1|…}
+
+既存記事の編集。記事を指定しない場合は @0 = 最も最近に編集したページを対象とします。
+`htnblog new` と同様にテキストエディターが起動します。
+
+#### htnblog publish {URL|@0|@1|…}
+
+指定した記事を下書き状態から公開状態へ変更します。
+
+#### htnblog browse {URL|@0|@1|…}
+
+指定した記事の編集ページをウェブブラウザで開きます。
+
+#### htnblog export
+
+全記事をカレントディレクトリに entry-YYYY-MM-DD-NNNNNN.md 形式でバックアップします。
 
 Goライブラリ htnblog-go
 ------------------------
