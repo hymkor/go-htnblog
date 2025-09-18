@@ -23,5 +23,3 @@ f[FILENAME]==1 && /^$/{
 (f[FILENAME]==1 && section %2 == 1 ){
     print
 }
-
-#gist https://gist.github.com/hymkor/b5ee45313143a838e72b2ed2314ca8e3
