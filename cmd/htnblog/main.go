@@ -27,12 +27,14 @@ import (
 )
 
 var (
-	flagMax    = flag.Int("n", 10, "fetch articles")
-	flagFirst  = flag.Bool("1", false, "Use the value of \"endpointurl1\" in the JSON setting")
-	flagSecond = flag.Bool("2", false, "Use the value of \"endpointurl2\" in the JSON setting")
-	flagThrid  = flag.Bool("3", false, "Use the value of \"endpointurl3\" in the JSON setting")
-	flagForce  = flag.Bool("f", false, "Delete without prompt")
-	flagDebug  = flag.Bool("debug", false, "Enable Debug Output")
+	flagMax         = flag.Int("n", 10, "fetch articles")
+	flagFirst       = flag.Bool("1", false, "Use the value of \"endpointurl1\" in the JSON setting")
+	flagSecond      = flag.Bool("2", false, "Use the value of \"endpointurl2\" in the JSON setting")
+	flagThrid       = flag.Bool("3", false, "Use the value of \"endpointurl3\" in the JSON setting")
+	flagForce       = flag.Bool("f", false, "Delete without prompt")
+	flagDebug       = flag.Bool("debug", false, "Enable Debug Output")
+	flagHeaderStart = flag.String("header-start", "```header", "header start line")
+	flagHeaderEnd   = flag.String("header-end", "```", "header end line")
 )
 
 func list(blog *htnblog.Blog) error {
@@ -114,8 +116,12 @@ func reportUrls(res *http.Response, err error) error {
 
 func newEntry(blog *htnblog.Blog) error {
 	var buffer bytes.Buffer
+	fmt.Fprintln(&buffer, *flagHeaderStart)
 	fmt.Fprintln(&buffer, "Rem: EndPointUrl:", blog.EndPointUrl)
-	buffer.WriteString("Category: \nTitle: \n---\n\n")
+	fmt.Fprintln(&buffer, "Category: ")
+	fmt.Fprintln(&buffer, "Title: ")
+	fmt.Fprintln(&buffer, *flagHeaderEnd)
+	fmt.Fprintln(&buffer)
 	draft, err := callEditor(buffer.Bytes())
 	if err != nil {
 		return err
@@ -162,21 +168,31 @@ func chomp(text []byte) []byte {
 
 func splitHeaderAndBody(source []byte) (map[string]string, []byte) {
 	header := map[string]string{}
+	inHeader := false
+	start := []byte(*flagHeaderStart)
+	end := []byte(*flagHeaderEnd)
 	for len(source) > 0 {
 		var line []byte
 
 		line, source, _ = bytes.Cut(source, []byte{'\n'})
 		line = chomp(line)
-		if bytes.HasPrefix(line, []byte{'-', '-', '-'}) {
-			break
-		}
-		name, value, _ := strings.Cut(string(line), ":")
-		name = strings.ToLower(name)
-		value = strings.TrimSpace(value)
-		if old, ok := header[name]; ok {
-			header[name] = old + " " + value
+
+		if inHeader {
+			if bytes.HasPrefix(line, end) {
+				break
+			}
+			name, value, _ := strings.Cut(string(line), ":")
+			name = strings.ToLower(name)
+			value = strings.TrimSpace(value)
+			if old, ok := header[name]; ok {
+				header[name] = old + " " + value
+			} else {
+				header[name] = value
+			}
 		} else {
-			header[name] = value
+			if bytes.HasPrefix(line, start) {
+				inHeader = true
+			}
 		}
 	}
 	return header, source
@@ -184,6 +200,7 @@ func splitHeaderAndBody(source []byte) (map[string]string, []byte) {
 
 func entryToDraft(entry *htnblog.XmlEntry) []byte {
 	var buffer bytes.Buffer
+	fmt.Fprintln(&buffer, *flagHeaderStart)
 	fmt.Fprintln(&buffer, "Rem: Alternate-Url:", entry.AlternateUrl())
 	fmt.Fprintln(&buffer, "Rem: App-Edited:", entry.AppEdited)
 	fmt.Fprintln(&buffer, "Rem: Draft:", entry.Control.Draft)
@@ -196,7 +213,7 @@ func entryToDraft(entry *htnblog.XmlEntry) []byte {
 	fmt.Fprintln(&buffer)
 	fmt.Fprintln(&buffer, "Updated:", entry.Updated)
 	fmt.Fprintln(&buffer, "Title:", entry.Title)
-	fmt.Fprintln(&buffer, "---")
+	fmt.Fprintln(&buffer, *flagHeaderEnd)
 	fmt.Fprint(&buffer, entry.Content.Body)
 	return buffer.Bytes()
 }
@@ -414,7 +431,7 @@ func mains(args []string) error {
 			filepath.Base(os.Args[0]),
 			version, runtime.GOOS, runtime.GOARCH, runtime.Version())
 
-		io.WriteString(os.Stderr, `
+		fmt.Fprintf(os.Stderr, `
 Usage: htnblog {options...} {init|list|new|type|edit}
   htnblog init                   ... edit configuration
   htnblog list                   ... show recent articles
@@ -427,10 +444,10 @@ Usage: htnblog {options...} {init|list|new|type|edit}
   htnblog export                 ... export all articles
                                        as "./entry-YYYY-MM-DD-NNNNNN.md"
 
-    The lines in the draft up to "---" are the header lines,
+    The lines in the draft up to "%s" are the header lines,
     and the rest is the article body.
 
-`)
+`, *flagHeaderEnd)
 		flag.PrintDefaults()
 		return nil
 	}
