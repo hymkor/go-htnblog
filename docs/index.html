@@ -1164,47 +1164,10 @@ a.permalink:hover{
 <pre><code>scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
 scoop install htnblog
 </code></pre>
-<h3 id="heading-2">設定</h3>
-<p><code>htnblog init</code> を実行してください。</p>
-<pre><code>$ htnblog init
-Hatena-id ? (← Hatena-IDを入力)
-API-KEY ? (← APIキー入力)
-End Point URL 1 ? (← 一つ目のブログのEndPointURL を入力)
-End Point URL 2 ? (← 二つ目のブログのEndPointURL を入力:Enterのみで省略可)
-End Point URL 3 ? (← 三つめのブログのEndPointURL を入力:Enterのみで省略可)
-End Point URL (default) ? (← デフォルトのブログの EndPointURL: 既定値は1と同じ)
-Text Editor Path ? (← テキストエディタのパス: 既定値は%EDITOR%)
-Saved configuration to C:\Users\hymkor\.htnblog
-</code></pre>
-<p>設定は ~/.htnblog というファイルに次のように保存されます。</p>
-<pre><code>{
-    &quot;userid&quot;:&quot;(YOUR_HATENA_ID)&quot;,
-    &quot;endpointurl&quot;:&quot;(END_POINT_URL)&quot;,
-    &quot;apikey&quot;:&quot;(YOUR API KEY)&quot;,
-    &quot;editor&quot;:&quot;(YOUR EDITOR FULLPATH))&quot;
-    &quot;endpointurl1&quot;:&quot;(END_POINT_URL at option `-1`)&quot;,
-    &quot;endpointurl2&quot;:&quot;(END_POINT_URL at option `-2`)&quot;,
-    &quot;endpointurl3&quot;:&quot;(END_POINT_URL at option `-3`)&quot;,
-}
-</code></pre>
-<ul>
-<li><strong>endpointurl</strong> は 「はてな」の「ダッシュボード」 → (ブログ名) → 「設定」 → 詳細設定 → 「AtomPub」セクションのルートネンドポイントの記載の URL になります。</li>
-<li><strong>apikey</strong> は「アカウント設定」→「APIキー」に記載されています。</li>
-<li><strong>editor</strong> は編集に使うテキストエディターのパスを記載してください。</li>
-<li><strong>endpointurl[123]</strong> は <strong>endpointurl</strong> と同じですが、オプション -1,-2,-3 が指定された時にこちらが使われます。</li>
-</ul>
-<h3 id="heading-3">使い方</h3>
+<h3 id="heading-2">使い方</h3>
 <p><a href="https://github.com/hymkor/htnblog-go/blob/master/cmd/htnblog/main.go">cmd/htnblog/main.go</a></p>
-<ul>
-<li><code>htnblog</code> (オプションなし) … ヘルプ</li>
-<li><code>htnblog init</code> … 設定の編集</li>
-<li><code>htnblog list</code> … 直近10件の記事のリスト</li>
-<li><code>htnblog new</code> … 新規記事のドラフトを作成</li>
-<li><code>htnblog edit {URL|@0|@1|…}</code> … 既存記事の編集。記事を指定しない場合は @0 = 最も最近に編集したページを対象とする</li>
-<li><code>htnblog publish {URL|@0|@1|…}</code> … 指定した記事を下書き状態から公開状態へ変更する</li>
-<li><code>htnblog browse {URL|@0|@1|…}</code> … 指定した記事の編集ページをウェブブラウザで開く</li>
-<li><code>htnblog export</code> ... 全記事をカレントディレクトリに entry-YYYY-MM-DD-NNNNNN.md 形式でバックアップする</li>
-</ul>
+<h4 id="htnblog-">htnblog (オプションなし)</h4>
+<p>ヘルプを表示します</p>
 <pre><code class="language-./htnblog">htnblog v1.1.0-9-ga4262d3-windows-amd64 by go1.25.1
 
 Usage: htnblog {options...} {init|list|new|type|edit}
@@ -1234,6 +1197,49 @@ Usage of ./htnblog:
   -rc string
     	use the specified file instead of ~/.htnblog
 </code></pre>
+<h4 id="htnblog-init">htnblog init</h4>
+<p>設定を編集します。</p>
+<pre><code>$ htnblog init
+Hatena-id ? (← Hatena-IDを入力)
+API-KEY ? (← APIキー入力)
+End Point URL 1 ? (← 一つ目のブログのEndPointURL を入力)
+End Point URL 2 ? (← 二つ目のブログのEndPointURL を入力:Enterのみで省略可)
+End Point URL 3 ? (← 三つめのブログのEndPointURL を入力:Enterのみで省略可)
+End Point URL (default) ? (← デフォルトのブログの EndPointURL: 既定値は1と同じ)
+Text Editor Path ? (← テキストエディタのパス: 既定値は%EDITOR%)
+Saved configuration to C:\Users\hymkor\.htnblog
+</code></pre>
+<p>設定は ~/.htnblog というファイルに次のように保存されます。</p>
+<pre><code class="language-json">{
+    &quot;userid&quot;:&quot;(YOUR_HATENA_ID)&quot;,
+    &quot;endpointurl&quot;:&quot;(END_POINT_URL)&quot;,
+    &quot;apikey&quot;:&quot;(YOUR API KEY)&quot;,
+    &quot;editor&quot;:&quot;(YOUR EDITOR FULLPATH))&quot;
+    &quot;endpointurl1&quot;:&quot;(END_POINT_URL at option `-1`)&quot;,
+    &quot;endpointurl2&quot;:&quot;(END_POINT_URL at option `-2`)&quot;,
+    &quot;endpointurl3&quot;:&quot;(END_POINT_URL at option `-3`)&quot;,
+}
+</code></pre>
+<ul>
+<li><strong>endpointurl</strong> は 「はてな」の「ダッシュボード」 → (ブログ名) → 「設定」 → 詳細設定 → 「AtomPub」セクションのルートネンドポイントの記載の URL になります。</li>
+<li><strong>apikey</strong> は「アカウント設定」→「APIキー」に記載されています。</li>
+<li><strong>editor</strong> は編集に使うテキストエディターのパスを記載してください。</li>
+<li><strong>endpointurl[123]</strong> は <strong>endpointurl</strong> と同じですが、オプション -1,-2,-3 が指定された時にこちらが使われます。</li>
+</ul>
+<h4 id="htnblog-list">htnblog list</h4>
+<p>直近10件の記事のリストを表示します。</p>
+<h4 id="htnblog-new">htnblog new</h4>
+<p>新規記事のドラフトを作成します。テキストエディターが起動します。</p>
+<p>エディターを終了すると、<code>Are you sure to post ? (y/n/edit):</code> というプロンプトが表示されます。<code>y</code> で投稿実行、<code>n</code> はドラフトを破棄、<code>e</code> で編集しなおしとなります。</p>
+<h4 id="htnblog-edit-url01">htnblog edit {URL|@0|@1|…}</h4>
+<p>既存記事の編集。記事を指定しない場合は @0 = 最も最近に編集したページを対象とします。
+<code>htnblog new</code> と同様にテキストエディターが起動します。</p>
+<h4 id="htnblog-publish-url01">htnblog publish {URL|@0|@1|…}</h4>
+<p>指定した記事を下書き状態から公開状態へ変更します。</p>
+<h4 id="htnblog-browse-url01">htnblog browse {URL|@0|@1|…}</h4>
+<p>指定した記事の編集ページをウェブブラウザで開きます。</p>
+<h4 id="htnblog-export">htnblog export</h4>
+<p>全記事をカレントディレクトリに entry-YYYY-MM-DD-NNNNNN.md 形式でバックアップします。</p>
 <h2 id="go-htnblog-go">Goライブラリ htnblog-go</h2>
 <h3 id="-">使用例: 一覧表示</h3>
 <p><a href="https://github.com/hymkor/htnblog-go/blob/master/examples/list.go">examples/list.go</a></p>
