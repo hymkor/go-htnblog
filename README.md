@@ -124,6 +124,20 @@ Saved configuration to C:\Users\hymkor\.htnblog
 
 新規記事のドラフトを作成します。テキストエディターが起動します。
 
+    ```header
+    Rem: EndPointUrl: https://blog.hatena.ne.jp/zetamatta/zetamatta.hatenablog.com/atom
+    Category: 
+    Title: 
+    ```
+
+`` ```header `` から `` ``` `` まではヘッダ行になります。記事の設定情報が編集可能です。
+
+- `Category:` は、はてなブログのカテゴリ名を空白で区切ってならべます。
+- `Title:` 以下には記事のタイトルを記述します。
+- `Rem:` で始まる行は参考情報です。変更しても反映されず、無視されます。
+- 本文の markdown はヘッダ行の後: 二番目の `` ``` `` 以降に記述してください。
+- ヘッダの開始行、終了行は -header-start , -header-end で変更可能です
+
 エディターを終了すると、`Are you sure to post ? (y/n/edit):` というプロンプトが表示されます。`y` で投稿実行、`n` はドラフトを破棄、`e` で編集しなおしとなります。
 
 #### htnblog edit {URL|@0|@1|…}
