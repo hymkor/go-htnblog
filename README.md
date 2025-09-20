@@ -51,7 +51,7 @@ scoop install htnblog
 ヘルプを表示します
 
 ```./htnblog |
-htnblog v1.1.0-9-ga4262d3-windows-amd64 by go1.25.1
+htnblog v1.2.0-6-gc339b6a-windows-amd64 by go1.25.1
 
 Usage: htnblog {options...} {init|list|new|type|edit}
   htnblog init                   ... edit configuration
@@ -65,7 +65,7 @@ Usage: htnblog {options...} {init|list|new|type|edit}
   htnblog export                 ... export all articles
                                        as "./entry-YYYY-MM-DD-NNNNNN.md"
 
-    The lines in the draft up to "---" are the header lines,
+    The lines in the draft up to "```" are the header lines,
     and the rest is the article body.
 
 Usage of ./htnblog:
@@ -79,6 +79,10 @@ Usage of ./htnblog:
     	fetch articles (default 10)
   -rc string
     	use the specified file instead of ~/.htnblog
+  -header-start string
+    	header start line
+  -header-end string
+    	header end line
 ```
 
 #### htnblog init
